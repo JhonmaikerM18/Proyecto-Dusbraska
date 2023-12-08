@@ -1,0 +1,9 @@
+{
+    "C_Cpp.errorSquiggles": "Disabled",
+    "files.associations": {
+        "estructuras.h": "c",
+        "include.h": "c",
+        "conio.h": "c",
+        "estructura_2.h": "c"
+    }
+}
