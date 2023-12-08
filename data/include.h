@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <conio.h>
+#include <time.h>
 
 #define aa  160
 #define e  130

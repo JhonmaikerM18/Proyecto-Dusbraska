@@ -5,7 +5,7 @@ int temp = 0;
 struct docente
 {
     char nombre_doc[12], apellido_doc[12], telefono_d[13], cedula_d[10];
-    int secciones_doc, disp_doc, insc_doc[3], opcion[0], disponibilidad[5];
+    int secciones_doc, disp_doc, insc_doc[2], opcion[0], disponibilidad[4];
 };
 
 // Función int que verifica si una cadena es un número válido y devuelve 1 si lo es, y 0 si no lo es
@@ -82,10 +82,9 @@ int carga_de_datos_doc()
 
                 for (int j = 0; j < docentes[i].disp_doc; j++)
                 {
-                    int dia = 0;
+                    int dia;
                     scanf("%d", &dia);
                     getchar();
-                    fflush(stdin);
                     switch (dia)
                     {
                     case 1:
@@ -120,9 +119,10 @@ int carga_de_datos_doc()
                     {
                         for (int j = 0; j < docentes[i].secciones_doc; j++)
                         {
-                            printf("Ingrese la cantidad inscritos en la secci%cn %d > ", o, j + 1);
-                            scanf("%d", &docentes[i].insc_doc[j]);
-                            getchar();
+
+                            srand(time(NULL));
+                            docentes[i].insc_doc[j] = ((rand() %25) + 10);
+                            fflush(stdin);
                             valido = 1;
                         }
                     }
@@ -171,8 +171,8 @@ int mostrar_datos_doc()
         for (i = 0; i < docentes[0].opcion[0]; i++)
         {
             printf("\t------------ Datos del docente %d ------------ \n\n", i + 1);
-            printf("Nombre del docente > %s", docentes[i].nombre_doc);
-            printf("El Apellido del docente > %s", docentes[i].apellido_doc);
+            printf("Nombre del docente > %s\n", docentes[i].nombre_doc);
+            printf("El Apellido del docente > %s\n", docentes[i].apellido_doc);
             printf("Ingrese la c%cdula del docente > %s \n", e, docentes[i].cedula_d);
             printf("Ingrese el tel%cfono del docente > %s \n\n", e, docentes[i].telefono_d);
             printf("La disponibilidad del docente son los d%cas > ", ai);
