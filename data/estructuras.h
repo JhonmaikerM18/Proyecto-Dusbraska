@@ -1,14 +1,12 @@
 #include "include.h"
-
 int temp = 0;
 // Definici�n de la estructura de Docente
 struct docente
 {
     char nombre_doc[12], apellido_doc[12], telefono_d[13], cedula_d[10];
-    int secciones_doc, disp_doc, insc_doc[2], opcion[0], disponibilidad[4];
+    int secciones_doc, disp_doc, insc_doc[4], opcion[0], disponibilidad[4];
 };
 
-// Función int que verifica si una cadena es un número válido y devuelve 1 si lo es, y 0 si no lo es
 int verificar_numero(char *cadena)
 {
     int j = 0;
@@ -26,23 +24,31 @@ int verificar_numero(char *cadena)
     }
 }
 
+void random(int *k, int x)
+{
+    int j = 0;
+    for (j = 0; j < x; j++)
+    {
+        k[j] = ((rand() % 25) + 10);
+    }
+}
+
+
 int carga_de_datos_doc()
 {
     struct docente docentes[16];
-
     printf("%cCuantos docentes van a quedar en registro? \n", signo);
-    scanf("%d", &docentes[0].opcion[0]);
+    scanf("%d", &docentes[i].opcion[0]);
     fflush(stdin);
-    if (docentes[0].opcion[0] > 0 | docentes[0].opcion[0] < 17)
+    if (docentes[i].opcion[0] > 0 && docentes[i].opcion[0] < 17)
     {
         system("cls");
         FILE *registros_docente;
         registros_docente = fopen("data/registros_doc", "wb");
         if (registros_docente)
         {
-            for (i = 0; i < docentes[0].opcion[0]; i++)
+            for (i = 0; i < docentes[i].opcion[0]; i++)
             {
-                printf("%d", docentes[0].opcion[0]);
                 printf("\tIngrese los datos del docente %d\n", i + 1);
                 printf("Nombre del docente > ");
                 scanf("%s", docentes[i].nombre_doc);
@@ -71,7 +77,7 @@ int carga_de_datos_doc()
                     scanf("%s", docentes[i].telefono_d);
                     fflush(stdin);
                 }
-                
+
                 printf("\nIngrese la disponibilidad del docente - Un n%cmero entero por dia disponible > ", u);
                 scanf("%d", &docentes[i].disp_doc);
                 fflush(stdin);
@@ -88,7 +94,7 @@ int carga_de_datos_doc()
                     switch (dia)
                     {
                     case 1:
-                        docentes[i].disponibilidad[0] = 1; // Lunes
+                        docentes[i].disponibilidad[0] = 2; // Lunes
                         break;
                     case 2:
                         docentes[i].disponibilidad[1] = 1; // Martes
@@ -107,37 +113,31 @@ int carga_de_datos_doc()
                         break;
                     }
                 }
-
                 system("cls");
-                printf("Ingrese las secciones asignadas > ");
-                scanf("%d", &docentes[i].secciones_doc);
-                getchar();
+                srand(time(NULL));
                 int valido = 0;
+
                 while (valido == 0)
                 {
-                    if (docentes[i].secciones_doc < 4)
-                    {
-                        for (int j = 0; j < docentes[i].secciones_doc; j++)
-                        {
+                    printf("Ingrese las secciones asignadas > ");
+                    scanf("%d", &docentes[i].secciones_doc);
+                    getchar();
 
-                            srand(time(NULL));;
-                            docentes[i].insc_doc[j] = ((rand() %25) + 10);
-                            fflush(stdin);
-                            valido = 1;
-                        }
-                    }
-                    else if (docentes[i].secciones_doc > 3)
+                    if (docentes[i].secciones_doc > 0 && docentes[i].secciones_doc < 4)
                     {
-                        printf("La maxima cantidad de secciones por docentes es 3.\n");
+                        random(docentes[i].insc_doc, docentes[i].secciones_doc);
+                        valido = 1;
                     }
                     else
                     {
-                        printf("Ingrese una cantidad valida.\n");
+                        printf("Cantidad v%clida entre 1 a 3. El M%cximo de secciones es 3 por docente.\n", aa, aa);
                     }
                 }
+
+                fflush(stdin);
             }
 
-            fwrite(docentes, sizeof(struct docente), i, registros_docente);
+            fwrite(docentes, sizeof(struct docente), 16, registros_docente);
             fclose(registros_docente);
         }
         else
@@ -145,7 +145,7 @@ int carga_de_datos_doc()
             printf("Error al abrir el archivo\n");
         }
     }
-    else if (docentes[0].opcion[0] > 16)
+    else if (docentes[i].opcion[0] > 16)
     {
         printf("No tenemos suficientes recursos para alojar esa cantidad");
     }
@@ -168,7 +168,7 @@ int mostrar_datos_doc()
     {
         fread(docentes, sizeof(struct docente), 2, registros_docentes);
         fclose(registros_docentes);
-        for (i = 0; i < docentes[0].opcion[0]; i++)
+        for (i = 0; i < docentes[i].opcion[0]; i++)
         {
             printf("\t------------ Datos del docente %d ------------ \n\n", i + 1);
             printf("Nombre del docente > %s\n", docentes[i].nombre_doc);
@@ -177,7 +177,7 @@ int mostrar_datos_doc()
             printf("Ingrese el tel%cfono del docente > %s \n\n", e, docentes[i].telefono_d);
             printf("La disponibilidad del docente son los d%cas > ", ai);
 
-            if (docentes[i].disponibilidad[0] == 1)
+            if (docentes[i].disponibilidad[0] == 2)
             {
                 printf("Lunes ");
             }
