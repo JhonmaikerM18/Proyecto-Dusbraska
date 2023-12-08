@@ -120,7 +120,7 @@ int carga_de_datos_doc()
                         for (int j = 0; j < docentes[i].secciones_doc; j++)
                         {
 
-                            srand(time(NULL));
+                            srand(time(NULL));;
                             docentes[i].insc_doc[j] = ((rand() %25) + 10);
                             fflush(stdin);
                             valido = 1;
