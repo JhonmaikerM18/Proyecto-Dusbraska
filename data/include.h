@@ -10,7 +10,7 @@
 #define ai  161
 #define o  162
 #define u  163
-#define signo  168
+#define signo  168 
 
 
 int i;

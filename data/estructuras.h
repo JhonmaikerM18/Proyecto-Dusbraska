@@ -1,5 +1,4 @@
 #include "include.h"
-int temp = 0;
 // Definici�n de la estructura de Docente
 struct docente
 {
@@ -33,21 +32,32 @@ void random(int *k, int x)
     }
 }
 
+int verificar_telefono(char* numero);
 
 int carga_de_datos_doc()
 {
-    struct docente docentes[16];
+    struct docente docentes[32];
+
     printf("%cCuantos docentes van a quedar en registro? \n", signo);
-    scanf("%d", &docentes[i].opcion[0]);
+    do
+    {
+        if (scanf("%d", &docentes[0].opcion[0]) != 1)
+        {
+            printf("Error: entrada no v%clida\n", aa);
+            while (getchar() != '\n');
+        }
+    } while (0);
+
     fflush(stdin);
-    if (docentes[i].opcion[0] > 0 && docentes[i].opcion[0] < 17)
+
+    if (docentes[0].opcion[0] > 0 && docentes[0].opcion[0] < 33)
     {
         system("cls");
         FILE *registros_docente;
         registros_docente = fopen("data/registros_doc", "wb");
         if (registros_docente)
         {
-            for (i = 0; i < docentes[i].opcion[0]; i++)
+            for (i = 0; i < docentes[0].opcion[0]; i++)
             {
                 printf("\tIngrese los datos del docente %d\n", i + 1);
                 printf("Nombre del docente > ");
@@ -71,7 +81,7 @@ int carga_de_datos_doc()
                 scanf("%s", docentes[i].telefono_d);
                 fflush(stdin);
 
-                while (!verificar_numero(docentes[i].telefono_d))
+                while (!verificar_telefono(docentes[i].telefono_d))
                 {
                     printf("Error: Ingrese un n%cmero de tel%cfono correcto: ", u, e);
                     scanf("%s", docentes[i].telefono_d);
@@ -137,7 +147,7 @@ int carga_de_datos_doc()
                 fflush(stdin);
             }
 
-            fwrite(docentes, sizeof(struct docente), 16, registros_docente);
+            fwrite(docentes, sizeof(struct docente), 32, registros_docente);
             fclose(registros_docente);
         }
         else
@@ -145,7 +155,7 @@ int carga_de_datos_doc()
             printf("Error al abrir el archivo\n");
         }
     }
-    else if (docentes[i].opcion[0] > 16)
+    else if (docentes[0].opcion[0] > 32)
     {
         printf("No tenemos suficientes recursos para alojar esa cantidad");
     }
@@ -161,14 +171,14 @@ int mostrar_datos_doc()
 {
 
     FILE *registros_docentes;
-    struct docente docentes[16];
+    struct docente docentes[32];
 
     registros_docentes = fopen("data/registros_doc", "rb");
     if (registros_docentes)
     {
         fread(docentes, sizeof(struct docente), 2, registros_docentes);
         fclose(registros_docentes);
-        for (i = 0; i < docentes[i].opcion[0]; i++)
+        for (i = 0; i < docentes[0].opcion[0]; i++)
         {
             printf("\t------------ Datos del docente %d ------------ \n\n", i + 1);
             printf("Nombre del docente > %s\n", docentes[i].nombre_doc);
@@ -207,4 +217,24 @@ int mostrar_datos_doc()
     }
 
     return 0;
+}
+
+int verificar_telefono(char* numero) {
+    int longitud = strlen(numero);
+    
+    if (longitud != 11) {
+        return 0; // número incorrecto
+    }
+    
+    for (int i = 0; i < longitud; i++) {
+        if (!isdigit(numero[i])) {
+            return 0; // número incorrecto
+        }
+    }
+    
+    if (strncmp(numero, "0412", 4) != 0 && strncmp(numero, "0414", 4) != 0 && strncmp(numero, "0416", 4) != 0 && strncmp(numero, "0424", 4) != 0 && strncmp(numero, "0426", 4) != 0) {
+        return 0; // número incorrecto
+    }
+    
+    return 1; // número correcto
 }

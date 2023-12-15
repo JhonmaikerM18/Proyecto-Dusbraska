@@ -1,14 +1,12 @@
 #include "data/include.h"
-//#include "data/login.h"
+#include "data/login.h"
 #include "data/estructuras.h"
 
 int main()
 {
-
+    //login();
     carga_de_datos_doc();
-    system("cls");
     mostrar_datos_doc();
-
 
     // login(); system("cls");
     /*do
@@ -46,6 +44,8 @@ int main()
         }
 
     } while (caso == 10);*/
+
+
 
     system("pause>data/clear");
     return 0;
