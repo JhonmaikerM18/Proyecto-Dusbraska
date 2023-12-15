@@ -236,5 +236,5 @@ int verificar_telefono(char* numero) {
         return 0; // número incorrecto
     }
     
-    return 1; // número correcto
+    return 1; // número correctoo
 }
