@@ -4,9 +4,10 @@
 
 int main()
 {
-    //login();
-    carga_de_datos_doc();
-    mostrar_datos_doc();
+    disponibilidad_de_horario();
+    //login(); 
+    //carga_de_datos_doc();
+    //mostrar_datos_doc();
 
     // login(); system("cls");
     /*do

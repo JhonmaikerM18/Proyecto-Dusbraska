@@ -238,3 +238,29 @@ int verificar_telefono(char* numero) {
     
     return 1; // número correctoo
 }
+
+void disponibilidad_de_horario(){
+    int tem;
+    char s = 196;
+    char d = 179;
+    char ds = 192;
+    char dm = 193;
+    char dss = 217;
+    char cs= 218;
+    char cm = 194;
+    char css = 191;
+    char mm = 197;
+    printf("  Ingrese el horario disponible del docente \n");
+    printf("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",cs,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,cm,s,s,s,s,s,s,s,s,s,s,s,css);
+    printf("   %c     HORA        %c  NUMERO   %c\n", d,d,d);
+    printf("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",d,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,mm,s,s,s,s,s,s,s,s,s,s,s,d);
+    printf("   %c 7:50 A 8:40     %c   (1)     %c\n", d,d,d);
+    printf("   %c 8:45 A 9:35     %c   (2)     %c\n", d,d,d);
+    printf("   %c 9:40 A 10:25    %c   (3)     %c\n", d,d,d);
+    printf("   %c10:30 A 11:20    %c   (4)     %c\n", d,d,d);
+    printf("   %c11:25 A 12:10    %c   (5)     %c\n", d,d,d);
+    printf("   %c12:12 A 01:10    %c   (6)     %c\n", d,d,d);
+    printf("   %c01:15 A 03:00    %c   (7)     %c\n", d,d,d);
+    printf("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",ds,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,dm,s,s,s,s,s,s,s,s,s,s,s,dss);
+    return;
+}
