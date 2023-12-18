@@ -291,8 +291,17 @@ void disponibilidad_de_horario()
         printf("Ingrese las horas disponibles del docente \n");
 
         for (int j = 0; j < 3; j++)
-        {
-            scanf("%d", &hora);
+        {  
+            do
+                {
+                    if (scanf("%d", &hora) != 1)
+                    {
+                        printf("Error: entrada no v%clida\n", aa);
+                        while (getchar() != '\n')
+                            ;
+                    }
+                } while (0);
+
             getchar();
             switch (hora)
             {
