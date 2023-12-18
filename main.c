@@ -2,8 +2,11 @@
 #include "data/login.h"
 #include "data/estructuras.h"
 
+
 int main()
 {
+    cursor();
+
     //disponibilidad_de_horario();
     //login(); 
     carga_de_datos_doc();
@@ -50,4 +53,13 @@ int main()
 
     system("pause>data/clear");
     return 0;
+}
+
+void cursor()
+{
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO cursorInfo;
+    GetConsoleCursorInfo(hConsole, &cursorInfo);
+    cursorInfo.bVisible = FALSE; // Hacer el cursor visible
+    SetConsoleCursorInfo(hConsole, &cursorInfo);
 }

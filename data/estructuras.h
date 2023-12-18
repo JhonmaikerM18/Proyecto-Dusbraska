@@ -12,7 +12,7 @@ struct horario_doc
 };
 
 int verificar_numero(char *cadena)
-{
+{ 
     int j = 0;
     while (isdigit(cadena[j]))
     {

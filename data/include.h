@@ -4,16 +4,19 @@
 #include <ctype.h>
 #include <conio.h>
 #include <time.h>
+#include <windows.h> 
 
-#define aa  160
-#define e  130
-#define ai  161
-#define o  162
-#define u  163
-#define signo  168 
-
+#define aa 160
+#define e 130
+#define ai 161
+#define o 162
+#define u 163
+#define signo 168
 
 int i;
+
+
+void cursor();
 
 /*
                 printf("%s\n"), docentes[i].nombre_doc;
@@ -24,3 +27,4 @@ int i;
                 printf("%d\n"), docentes[i].secc_asig;
                 printf("%d\n"), docentes[i].insc_doc;
                 printf("%d\n"), docentes[i].disponibilidad;*/
+
