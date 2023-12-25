@@ -15,6 +15,35 @@
 #define signo 168 // El signo ¿
 int i;
 
+#define s 196
+#define d 179
+#define ds  192
+#define dm  193
+#define dss 217
+#define cs  218
+#define cm  194
+#define css 191
+#define mm  197
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
                 printf("%s\n"), docentes[i].nombre_doc;
                 printf("%s\n"), docentes[i].apellido_doc;

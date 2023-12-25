@@ -285,15 +285,6 @@ int verificacion_de_realidad(char *numero, int x)
 void disponibilidad_de_horario(int horario_d, int diaa, int i)
 {
     int hora;
-    char s = 196;
-    char d = 179;
-    char ds = 192;
-    char dm = 193;
-    char dss = 217;
-    char cs = 218;
-    char cm = 194;
-    char css = 191;
-    char mm = 197;
     struct docente docentes[32];
 
     system("cls");
