@@ -13,7 +13,7 @@ struct docente
 void random();
 void disponibilidad_de_horario();
 int verificar_hora(int diaa, int hora, int limpio);
-int verificar_telefono(char *numero);
+int verificacion_de_realidad(char *numero, int x);
 int verificar_numero(char *cadena);
 
 int carga_de_datos_doc(int cantidad_doc)
@@ -28,7 +28,7 @@ int carga_de_datos_doc(int cantidad_doc)
     {
         for (i = 0; i < cantidad_doc; i++)
         {
-            printf("\tIngrese los datos del docente %d\n", i + 1);
+            printf("\tIngrese los datos del docente %d\n\n", i + 1);
             printf("Nombre del docente > ");
             scanf("%s", docentes[i].nombre_doc);
             fflush(stdin);
@@ -39,9 +39,8 @@ int carga_de_datos_doc(int cantidad_doc)
             scanf("%s", docentes[i].cedula_d);
             fflush(stdin);
 
-            while (!verificar_numero(docentes[i].cedula_d))
+            while (!verificacion_de_realidad(docentes[i].cedula_d, 1))
             {
-                printf("Error: Ingrese su c%cdula nuevamente > ", e);
                 scanf("%s", docentes[i].cedula_d);
                 fflush(stdin);
             }
@@ -50,9 +49,9 @@ int carga_de_datos_doc(int cantidad_doc)
             scanf("%s", docentes[i].telefono_d);
             fflush(stdin);
 
-            while (!verificar_telefono(docentes[i].telefono_d))
+            while (!verificacion_de_realidad(docentes[i].telefono_d, 0))
             {
-                printf("Error: Ingrese un n%cmero de tel%cfono correcto: ", u, e);
+                printf("Error - Ingrese un n%cmero de tel%cfono correcto > ", u, e);
                 scanf("%s", docentes[i].telefono_d);
                 fflush(stdin);
             }
@@ -83,9 +82,8 @@ int carga_de_datos_doc(int cantidad_doc)
 
             fflush(stdin);
 
-            printf("Ingrese ahora el d%ca disponibles: \n", ai);
-            printf("Lunes = 1    -    Martes  = 2    -    Mi%crcoles = 3\n", e);
-            printf("Jueves = 4    -    Viernes = 5     \n");
+            printf("\nLunes = 1  /  Martes  = 2  /  Mi%crcoles = 3 / Jueves = 4  /  Viernes = 5\n", e);
+            printf("Ingrese el d%ca disponible del docente > ", ai);
 
             for (int j = 0; j < 1; j++)
             {
@@ -161,6 +159,7 @@ int carga_de_datos_doc(int cantidad_doc)
                 }
             }
             system("cls");
+            printf("DATOS A%cADIDOS SATIFACTORIAMENTE\n", NN);
             // srand(time(NULL));
             valido = 0;
         }
@@ -227,14 +226,9 @@ int mostrar_datos_doc(int cantidad_doc)
     return 0;
 }
 
-int verificar_telefono(char *numero)
+int verificacion_de_realidad(char *numero, int x)
 {
     int longitud = strlen(numero);
-
-    if (longitud != 11)
-    {
-        return 0; // número incorrecto
-    }
 
     for (int i = 0; i < longitud; i++)
     {
@@ -244,9 +238,45 @@ int verificar_telefono(char *numero)
         }
     }
 
-    if (strncmp(numero, "0412", 4) != 0 && strncmp(numero, "0414", 4) != 0 && strncmp(numero, "0416", 4) != 0 && strncmp(numero, "0424", 4) != 0 && strncmp(numero, "0426", 4) != 0)
+    if (x = 0)
     {
-        return 0; // número incorrecto
+
+        if (longitud != 11)
+        {
+            return 0; // número incorrecto
+        }
+
+        if (strncmp(numero, "0412", 4) != 0 && strncmp(numero, "0414", 4) != 0 && strncmp(numero, "0416", 4) != 0 && strncmp(numero, "0424", 4) != 0 && strncmp(numero, "0426", 4) != 0)
+        {
+            return 0; // número incorrecto
+        }
+    }
+    else
+    {
+        int num = atoi(numero);
+        if (num > 6999999 && num < 30000000)
+        {
+            if (longitud != 8 && longitud != 7)
+            {
+                printf("Error - Ingrese su c%cdula nuevamente > ", e);
+                return 0; // número incorrecto
+            }
+        }
+        else if (num < 7000000)
+        {
+            printf("El docente no esta vivo :v - Ingrese nuevamente > ");
+            return 0; // Número incorrecto
+        }
+        else if (num > 34999999)
+        {
+            printf("Personas con esa c%cdula todavia no existen - Ingrese nuevamente > ", e, o);
+            return 0; // Número incorrecto
+        }
+        else
+        {
+            printf("Esa c%cdula es de una persona demasiado j%cven - Ingrese nuevamente > ", e, o);
+            return 0; // Número incorrecto
+        }
     }
 
     return 1; // número correctoo
@@ -267,31 +297,31 @@ void disponibilidad_de_horario(int horario_d, int diaa, int i)
     struct docente docentes[32];
 
     system("cls");
-    printf(" \tIngrese el horario disponible del docente \n");
-    printf(" El docente tiene 3 horas \n");
+    printf("    Ingrese el horario disponible del docente \n");
+    printf("           El docente tiene 3 horas \n");
     printf("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", cs, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, cm, s, s, s, s, s, s, s, s, s, s, s, css);
-    printf("   %c     HORA        %c  NUMERO   %c\n", d, d, d);
+    printf("   %c     HORA        %c   NUMERO  %c\n", d, d, d);
     printf("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", d, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, mm, s, s, s, s, s, s, s, s, s, s, s, d);
     printf("   %c                 %c           %c\n", d, d, d);
-    printf("   %c  7:50 A 8:40    %c   (1)     %c\n", d, d, d);
-    printf("   %c  8:45 A 9:35    %c   (2)     %c\n", d, d, d);
-    printf("   %c  9:40 A 10:25   %c   (3)     %c\n", d, d, d);
-    printf("   %c    DESCANSO     %c    -      %c\n", d, d, d);
-    printf("   %c 11:00 A 11:50   %c   (4)     %c\n", d, d, d);
-    printf("   %c 11:55 A 12:40   %c   (5)     %c\n", d, d, d);
-    printf("   %c 12:45 A 02:00   %c   (6)     %c\n", d, d, d);
+    printf("   %c  7:50 A 8:40    %c    (1)    %c\n", d, d, d);
+    printf("   %c  8:45 A 9:35    %c    (2)    %c\n", d, d, d);
+    printf("   %c  9:35 A 10:30   %c    (3)    %c\n", d, d, d);
+    printf("   %c    DESCANSO     %c     -     %c\n", d, d, d);
+    printf("   %c 11:00 A 11:50   %c    (4)    %c\n", d, d, d);
+    printf("   %c 11:55 A 12:40   %c    (5)    %c\n", d, d, d);
+    printf("   %c 12:45 A 01:40   %c    (6)    %c\n", d, d, d);
     // printf("   %c 01:15 A 03:00   %c   (7)     %c\n", d, d, d);
     printf("   %c                 %c           %c\n", d, d, d);
     printf("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", ds, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, dm, s, s, s, s, s, s, s, s, s, s, s, dss);
-    printf("Ingrese las horas disponibles del docente \n");
 
     for (int y = 0; y < horario_d; y++)
     {
         do
         {
+            printf("Ingrese hora escogida n%cmero (%d) > ", u, y + 1);
             if (scanf("%d", &hora) != 1)
             {
-                printf("Error: entrada no v%clida\n", aa);
+                printf("Error de entrada - Intente nuevamente > ");
                 while (getchar() != '\n')
                     ;
             }
@@ -343,7 +373,7 @@ void disponibilidad_de_horario(int horario_d, int diaa, int i)
             }
             break;
         default:
-            printf("Error de numero \n");
+            printf(" Error de numero. \n");
             y--;
             break;
         }
@@ -389,18 +419,17 @@ int verificar_hora(int dia, int hora, int limpio)
             }
         }
     }
-    printf(" ------ %d ------ ", dia);
     if (limpio == 1)
     {
         if (horario[dia][hora] == 0)
         {
             horario[dia][hora] = 1;
-            printf("El Docente fue asignado correctamente. \n");
+            printf("  El Docente fue asignado correctamente. \n");
             return 1;
         }
         else
         {
-            printf("Conflicto de horario - Escoja otra hora > ");
+            printf("Hora ocupada - Escoja otra hora \n");
             return 0;
         }
     }

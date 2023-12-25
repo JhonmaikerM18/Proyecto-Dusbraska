@@ -11,7 +11,8 @@
 #define ai 161
 #define o 162
 #define u 163
-#define signo 168
+#define NN 165 // La Ñ
+#define signo 168 // El signo ¿
 int i;
 
 /*

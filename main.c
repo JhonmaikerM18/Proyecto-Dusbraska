@@ -11,14 +11,16 @@ int main()
     {
         if (scanf("%d", &cantidad_doc) != 1)
         {
-            printf("Error: entrada no v%clida\n", aa);
+            printf("Error: entrada no v%clida - ", aa);
             printf("Ingrese nuevamente > ");
+            while (getchar() != '\n')
+                ;
         }
         else
         {
-            if (cantidad_doc < 0)
+            if (cantidad_doc < 1)
             {
-                printf("Cantidad no v%clida \n", aa);
+                printf("Error: entrada no v%clida - ", aa);
                 printf("Ingrese nuevamente > ");
             }
             else if (cantidad_doc > 32)
@@ -26,17 +28,16 @@ int main()
                 printf("No tenemos suficientes recursos para alojar esa cantidad \n");
                 printf("Ingrese nuevamente > ");
             }
-            else
+            else // EL QUE MANDA A LA CARGA DE DATOS
             {
                 valido = 1;
                 fflush(stdin);
-                system("cls");
             }
         }
     }
 
     carga_de_datos_doc(cantidad_doc);
-    //mostrar_datos_doc(cantidad_doc);
+    // mostrar_datos_doc(cantidad_doc);
 
     system("pause>data/clear");
     return 0;
