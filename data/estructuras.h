@@ -3,12 +3,7 @@ int valido = 0;
 int horario[5][6];
 int cantidad_doc;
 // Definici�n de la estructura de Docente
-struct docente
-{
-    char nombre_doc[12], apellido_doc[12], telefono_d[13], cedula_d[10];
-    int secciones_doc, disp_doc, insc_doc[4], dia_disp[4];
-    int uno[5], dos[5], tres[5], cuatro[5], cinco[5], seis[5];
-};
+
 
 void random();
 void disponibilidad_de_horario();
@@ -297,7 +292,6 @@ void disponibilidad_de_horario(int horario_d, int diaa, int i)
     printf("   %c  7:50 A 8:40    %c    (1)    %c\n", d, d, d);
     printf("   %c  8:45 A 9:35    %c    (2)    %c\n", d, d, d);
     printf("   %c  9:35 A 10:30   %c    (3)    %c\n", d, d, d);
-    printf("   %c    DESCANSO     %c     -     %c\n", d, d, d);
     printf("   %c 11:00 A 11:50   %c    (4)    %c\n", d, d, d);
     printf("   %c 11:55 A 12:40   %c    (5)    %c\n", d, d, d);
     printf("   %c 12:45 A 01:40   %c    (6)    %c\n", d, d, d);

@@ -25,7 +25,12 @@ int i;
 #define css 191
 #define mm  197
 
-
+struct docente
+{
+    char nombre_doc[12], apellido_doc[12], telefono_d[13], cedula_d[10];
+    int secciones_doc, disp_doc, insc_doc[4], dia_disp[4];
+    int uno[5], dos[5], tres[5], cuatro[5], cinco[5], seis[5];
+};
 
 
 
