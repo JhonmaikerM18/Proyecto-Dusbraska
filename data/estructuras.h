@@ -1,9 +1,15 @@
 #include "include.h"
+
 int valido = 0;
 int horario[5][6];
 int cantidad_doc;
 // Definici�n de la estructura de Docente
-
+struct docente
+{
+    char nombre_doc[12], apellido_doc[12], telefono_d[13], cedula_d[10];
+    int secciones_doc, disp_doc, insc_doc[4], dia_disp[4];
+    int uno[5], dos[5], tres[5], cuatro[5], cinco[5], seis[5];
+};
 
 void random();
 void disponibilidad_de_horario();
@@ -232,8 +238,7 @@ int verificacion_de_realidad(char *numero, int x)
             return 0; // número incorrecto
         }
     }
-
-    if (x = 0)
+    if (x == 0)
     {
 
         if (longitud != 11)
@@ -246,7 +251,7 @@ int verificacion_de_realidad(char *numero, int x)
             return 0; // número incorrecto
         }
     }
-    else
+    else if(x == 1)
     {
         int num = atoi(numero);
         if (num > 6999999 && num < 30000000)

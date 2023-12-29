@@ -138,7 +138,7 @@ void horario_mostrar()
     x = 3;
     c = 13;
 
-    // DIA LUNESSSSSSSSSSSSSSSSS
+    // BASE DE ASIGNACIONNN
     for (c; c < 100; c++)
     {
 

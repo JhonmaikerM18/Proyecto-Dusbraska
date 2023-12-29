@@ -4,6 +4,7 @@
 void icon();
 int main()
 {
+    valido = 0;
     icon();
     // login();
     printf("%cCuantos docentes van a quedar en registro? \n", signo);
