@@ -1,4 +1,5 @@
 #include "include.h"
+
 char om = 224;
 
 #define TECLA_ENTER 13

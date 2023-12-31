@@ -1,8 +1,8 @@
 #include "include.h"
-
+int valido_doc;
 int valido = 0;
-int horario[5][6];
 int cantidad_doc;
+
 // Definici�n de la estructura de Docente
 struct docente
 {
@@ -11,18 +11,62 @@ struct docente
     int uno[5], dos[5], tres[5], cuatro[5], cinco[5], seis[5];
 };
 
+struct ElementoHorario
+{
+    char *caracter;
+    int entero;
+};
+struct ElementoHorario horario[5][6] = {{{0}}};
+// FUNCIONES PROTOTIPO
 void random();
 void disponibilidad_de_horario();
-int verificar_hora(int diaa, int hora, int limpio);
+int verificar_hora(int dia, int hora, char *nombre, struct ElementoHorario horario[5][6]);
 int verificacion_de_realidad(char *numero, int x);
 int verificar_numero(char *cadena);
+// PARTE DEL HORARIO ES ESTA
+int horario_asig(int x, int y, int dia, int hora, int seccion, int aula, char *nombre, char *materia, char *sede);
+void gotoxy(int x, int y);
+void horario_mostrar();
+DWORD WINAPI hilos_docentes(LPVOID lpParam);
+int HILOS_HORARIO();
+// PARTE FINAL ARREGLO GRAFICOS NOMAS
+void icon();
 
-int carga_de_datos_doc(int cantidad_doc)
+int carga_de_datos_doc()
 {
-    struct docente docentes[32];
-    verificar_hora(0, 0, 0); // Limpiar los horarios para evitar Problemas xD
+    printf("%cCuantos docentes van a quedar en registro? \n", signo);
+    while (valido == 0)
+    {
+        if (scanf("%d", &cantidad_doc) != 1)
+        {
+            printf("Error: entrada no v%clida - ", aa);
+            printf("Ingrese nuevamente > ");
+            while (getchar() != '\n')
+                ;
+        }
+        else
+        {
+            if (cantidad_doc < 1)
+            {
+                printf("Error: entrada no v%clida - ", aa);
+                printf("Ingrese nuevamente > ");
+            }
+            else if (cantidad_doc > 32)
+            {
+                printf("No tenemos suficientes recursos para alojar esa cantidad \n");
+                printf("Ingrese nuevamente > ");
+            }
+            else // EL QUE MANDA A LA CARGA DE DATOS
+            {
+                valido = 1;
+                fflush(stdin);
+            }
+        }
+    }
 
     system("cls");
+    struct docente docentes[cantidad_doc];
+    struct ElementoHorario horario[5][6];
     FILE *registros_docente;
     registros_docente = fopen("data/registros_doc", "wb");
     if (registros_docente)
@@ -57,27 +101,6 @@ int carga_de_datos_doc(int cantidad_doc)
                 fflush(stdin);
             }
 
-            /*printf("\nIngrese la dia_disp del docente - Un n%cmero entero por dia disponible > ", u);
-            scanf("%d", &docentes[i].disp_doc);
-            while (valido == 1)
-            {
-                printf("Ingrese las secciones asignadas > ");
-                scanf("%d", &docentes[i].secciones_doc);
-                getchar();
-
-                if (docentes[i].secciones_doc > 0 && docentes[i].secciones_doc < 4)
-                {
-                    random(docentes[i].insc_doc, docentes[i].secciones_doc);
-                    valido = 2;
-                    fflush(stdin);
-                }
-                else
-                {
-                    printf("Cantidad v%clida entre 1 a 3. El M%cximo de secciones es 3 por docente.\n", aa, aa);
-                }
-            fflush(stdin);
-            }*/
-
             random(docentes[i].insc_doc, 3);
             srand(time(NULL));
 
@@ -95,7 +118,7 @@ int carga_de_datos_doc(int cantidad_doc)
                 {
                 case 1:
                     docentes[i].dia_disp[0] = 1; // Lunes
-                    if ((horario[1][1] && horario[1][2] && horario[1][3] && horario[1][4] && horario[1][5] && horario[1][6]) == 1)
+                    if ((horario[1][1].entero && horario[1][2].entero && horario[1][3].entero && horario[1][4].entero && horario[1][5].entero && horario[1][6].entero) == 1)
                     {
                         printf("Horario lleno - Ingrese otro dia > ");
                         j--;
@@ -107,7 +130,7 @@ int carga_de_datos_doc(int cantidad_doc)
                     break;
                 case 2:
                     docentes[i].dia_disp[1] = 2; // Martes
-                    if ((horario[2][1] && horario[2][2] && horario[2][3] && horario[2][4] && horario[2][5] && horario[2][6]) == 1)
+                    if ((horario[2][1].entero && horario[2][2].entero && horario[2][3].entero && horario[2][4].entero && horario[2][5].entero && horario[2][6].entero) == 1)
                     {
                         printf("Horario lleno - Ingrese otro dia > ");
                         j--;
@@ -119,7 +142,7 @@ int carga_de_datos_doc(int cantidad_doc)
                     break;
                 case 3:
                     docentes[i].dia_disp[2] = 3; // Miércoles
-                    if ((horario[3][1] && horario[3][2] && horario[3][3] && horario[3][4] && horario[3][5] && horario[3][6]) == 1)
+                    if ((horario[3][1].entero && horario[3][2].entero && horario[3][3].entero && horario[3][4].entero && horario[3][5].entero && horario[3][6].entero) == 1)
                     {
                         printf("Horario lleno - Ingrese otro dia > ");
                         j--;
@@ -131,7 +154,7 @@ int carga_de_datos_doc(int cantidad_doc)
                     break;
                 case 4:
                     docentes[i].dia_disp[3] = 4; // Jueves
-                    if ((horario[4][1] && horario[4][2] && horario[4][3] && horario[4][4] && horario[4][5] && horario[4][6]) == 1)
+                    if ((horario[4][1].entero && horario[4][2].entero && horario[4][3].entero && horario[4][4].entero && horario[4][5].entero && horario[4][6].entero) == 1)
                     {
                         printf("Horario lleno - Ingrese otro dia > ");
                         j--;
@@ -143,7 +166,7 @@ int carga_de_datos_doc(int cantidad_doc)
                     break;
                 case 5:
                     docentes[i].dia_disp[4] = 5; // Viernes
-                    if ((horario[5][1] && horario[5][2] && horario[5][3] && horario[5][4] && horario[5][5] && horario[5][6]) == 1)
+                    if ((horario[5][1].entero && horario[5][2].entero && horario[5][3].entero && horario[5][4].entero && horario[5][5].entero && horario[5][6].entero) == 1)
                     {
                         printf("Horario lleno - Ingrese otro dia > ");
                         j--;
@@ -171,59 +194,6 @@ int carga_de_datos_doc(int cantidad_doc)
     {
         printf("Error al abrir el archivo\n");
     }
-
-    return 0;
-}
-
-int mostrar_datos_doc(int cantidad_doc)
-{
-
-    FILE *registros_docentes;
-    struct docente docentes[32];
-
-    registros_docentes = fopen("data/registros_doc", "rb");
-    if (registros_docentes)
-    {
-        fread(docentes, sizeof(struct docente), cantidad_doc, registros_docentes);
-        fclose(registros_docentes);
-        for (i = 0; i < cantidad_doc; i++)
-        {
-            printf("\t------------ Datos del docente %d ------------ \n\n", i + 1);
-            printf("Nombre del docente > %s\n", docentes[i].nombre_doc);
-            printf("El Apellido del docente > %s\n", docentes[i].apellido_doc);
-            printf("Ingrese la c%cdula del docente > %s \n", e, docentes[i].cedula_d);
-            printf("Ingrese el tel%cfono del docente > %s \n\n", e, docentes[i].telefono_d);
-            printf("La dia_disp del docente son los d%cas > ", ai);
-
-            if (docentes[i].dia_disp[0] == 1)
-            {
-                printf("Lunes ");
-            }
-            if (docentes[i].dia_disp[1] == 2)
-            {
-                printf("Martes ");
-            }
-            if (docentes[i].dia_disp[2] == 3)
-            {
-                printf("Mi%crcoles ", e);
-            }
-            if (docentes[i].dia_disp[3] == 4)
-            {
-                printf("Jueves ");
-            }
-            if (docentes[i].dia_disp[4] == 5)
-            {
-                printf("Viernes ");
-            }
-
-            printf("\n\nLas secciones asignadas > %d \n", docentes[i].secciones_doc);
-            for (int j = 0; j < docentes[i].secciones_doc; j++)
-            {
-                printf("La cantidad de inscritos en la secci%cn %d > %d \n", o, j + 1, docentes[i].insc_doc[j]);
-            }
-        }
-    }
-
     return 0;
 }
 
@@ -251,7 +221,7 @@ int verificacion_de_realidad(char *numero, int x)
             return 0; // número incorrecto
         }
     }
-    else if(x == 1)
+    else if (x == 1)
     {
         int num = atoi(numero);
         if (num > 6999999 && num < 30000000)
@@ -303,10 +273,10 @@ void disponibilidad_de_horario(int horario_d, int diaa, int i)
     // printf("   %c 01:15 A 03:00   %c   (7)     %c\n", d, d, d);
     printf("   %c                 %c           %c\n", d, d, d);
     printf("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", ds, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, dm, s, s, s, s, s, s, s, s, s, s, s, dss);
-
+    int x = 0;
     for (int y = 0; y < horario_d; y++)
     {
-        do
+        while (x == 0)
         {
             printf("Ingrese hora escogida n%cmero (%d) > ", u, y + 1);
             if (scanf("%d", &hora) != 1)
@@ -315,49 +285,52 @@ void disponibilidad_de_horario(int horario_d, int diaa, int i)
                 while (getchar() != '\n')
                     ;
             }
-        } while (0);
+            else
+            {
+                x = 1;
+            }
+        }
 
-        getchar();
         switch (hora)
         {
         case 1:
             docentes[i].uno[diaa] = 1; // 7:50 A 8:40
-            if (!verificar_hora(diaa, docentes[i].uno[diaa], 1))
+            if (!verificar_hora(diaa, docentes[i].uno[diaa], docentes[i].nombre_doc, horario))
             {
                 y--;
             }
             break;
         case 2:
             docentes[i].dos[diaa] = 2; // 8:45 A 9:35
-            if (!verificar_hora(diaa, docentes[i].dos[diaa], 1))
+            if (!verificar_hora(diaa, docentes[i].dos[diaa], docentes[i].nombre_doc, horario))
             {
                 y--;
             }
             break;
         case 3:
             docentes[i].tres[diaa] = 3; // 9:40 A 10:25
-            if (!verificar_hora(diaa, docentes[i].tres[diaa], 1))
+            if (!verificar_hora(diaa, docentes[i].tres[diaa], docentes[i].nombre_doc, horario))
             {
                 y--;
             }
             break;
         case 4:
             docentes[i].cuatro[diaa] = 4; // 10:30 A 11:20
-            if (!verificar_hora(diaa, docentes[i].cuatro[diaa], 1))
+            if (!verificar_hora(diaa, docentes[i].cuatro[diaa], docentes[i].nombre_doc, horario))
             {
                 y--;
             }
             break;
         case 5:
             docentes[i].cinco[diaa] = 5; // 11:25 A 12:10
-            if (!verificar_hora(diaa, docentes[i].cinco[diaa], 1))
+            if (!verificar_hora(diaa, docentes[i].cinco[diaa], docentes[i].nombre_doc, horario))
             {
                 y--;
             }
             break;
         case 6:
             docentes[i].seis[diaa] = 6; // 12:15 A 01:30
-            if (!verificar_hora(diaa, docentes[i].seis[diaa], 1))
+            if (!verificar_hora(diaa, docentes[i].seis[diaa], docentes[i].nombre_doc, horario))
             {
                 y--;
             }
@@ -397,30 +370,191 @@ void random(int *k, int x)
     }
 }
 
-int verificar_hora(int dia, int hora, int limpio)
+int verificar_hora(int dia, int hora, char *nombre, struct ElementoHorario horario[5][6])
 {
-    if (limpio == 0)
+    printf("%d", horario[dia][hora].entero);
+    if (horario[dia][hora].entero == 0)
     {
-        for (dia = 0; dia < 5; dia++)
+        horario[dia][hora].entero = 1;
+        printf("  El Docente fue asignado correctamente. \n");
+        strcpy(horario[dia][hora].caracter, nombre);
+        return 1;
+    }
+    else
+    {
+        printf("Hora ocupada - Escoja otra hora \n");
+        return 0;
+    }
+}
+// PARTE DEL HORARIOOOOOOOO ESTAAA
+
+void gotoxy(int x, int y)
+{
+    HANDLE hCon;
+    hCon = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD dwPos;
+    dwPos.X = x;
+    dwPos.Y = y;
+    SetConsoleCursorPosition(hCon, dwPos);
+}
+
+void horario_mostrar()
+{
+    printf("%c", cs);
+
+    // LINEASSSSSS HORIZONTALESSS
+    int x_posiciones[] = {0, 2, 7, 12, 17, 22, 27, 32};
+    for (int x = 0; x < 8; x++)
+    {
+        for (int j = 1; j < 105; j++)
         {
-            for (hora = 0; hora < 6; hora++)
-            {
-                horario[dia][hora] = 0;
-            }
+            gotoxy(j, x_posiciones[x]);
+            printf("%c\n", s);
         }
     }
-    if (limpio == 1)
+
+    // LINEASSSSSS VERTICALESS
+    int y_posiciones[] = {0, 11, 30, 49, 68, 87, 106};
+    for (int y = 0; y < 7; y++)
     {
-        if (horario[dia][hora] == 0)
+        for (int j = 1; j < 32; j++)
         {
-            horario[dia][hora] = 1;
-            printf("  El Docente fue asignado correctamente. \n");
-            return 1;
-        }
-        else
-        {
-            printf("Hora ocupada - Escoja otra hora \n");
-            return 0;
+            gotoxy(y_posiciones[y], j);
+            printf("%c\n", d);
         }
     }
+
+    /// DIA DE SEMANAAA
+    gotoxy(3, 1);
+    printf("HORA");
+
+    gotoxy(3, 3);
+    printf("7:50 \n%c   A \n%c  8:40", d, d); // 1
+    gotoxy(3, 8);
+    printf("8:45 \n%c   A \n%c  9:35", d, d); // 2
+    gotoxy(3, 13);
+    printf("9:35 \n%c   A \n%c 10:30", d, d); // 3
+    gotoxy(3, 18);
+    printf("11:00 \n%c    A \n%c  11:50", d, d); // 4
+    gotoxy(3, 23);
+    printf("11:55 \n%c    A \n%c  12:40", d, d); // 5
+    gotoxy(3, 28);
+    printf("12:45 \n%c    A \n%c  01:40", d, d); // 6
+
+    // DIA DE LA SEMANA
+    gotoxy(17, 1);
+    printf("LUNES");
+
+    gotoxy(36, 1);
+    printf("MARTES");
+
+    gotoxy(54, 1);
+    printf("MIERCOLES");
+
+    gotoxy(74, 1);
+    printf("JUEVES");
+
+    gotoxy(93, 1);
+    printf("VIERNES");
+
+    return;
+}
+char materia[] = "Fundamentos";
+char sede[] = "Villa asia";
+
+DWORD WINAPI hilos_docentes(LPVOID lpParam)
+{
+    // Pudiera crear un (FOR) > Para esto pero prefiero manejarlo asi
+    // DIAAAAAAAAAAA LUNESSSSSSSSSS
+    horario_asig(12, 3, 1, 1, 3, 13, horario[0][1].caracter, materia, sede);
+    horario_asig(12, 8, 1, 2, 3, 13, horario[0][2].caracter, materia, sede);
+    horario_asig(12, 13, 1, 3, 3, 13, horario[0][3].caracter, materia, sede);
+    horario_asig(12, 18, 1, 4, 3, 13, horario[0][4].caracter, materia, sede);
+    horario_asig(12, 23, 1, 5, 3, 13, horario[0][5].caracter, materia, sede);
+    horario_asig(12, 28, 1, 6, 3, 13, horario[0][6].caracter, materia, sede);
+    /*// DIAAAAAAAAAAA MARTESSSSSSSSSSSSSSSS
+    horario_asig(31, 3, 2, 1, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(31, 8, 2, 2, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(31, 13, 2, 3, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(31, 18, 2, 4, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(31, 23, 2, 5, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(31, 28, 2, 6, 3, 13, docentes[i].nombre_doc, materia, sede);
+    // DIAAAAAAAAAAA MIERCOLESSSSSSSSSSSSSSSSSS
+    horario_asig(50, 3, 3, 1, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(50, 8, 3, 2, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(50, 13, 3, 3, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(50, 18, 3, 4, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(50, 23, 3, 5, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(50, 28, 3, 6, 3, 13, docentes[i].nombre_doc, materia, sede);
+    // DIAAAAAAAAAAA JUEVESSSSSSSSSSSSSSSS
+    horario_asig(69, 3, 4, 1, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(69, 8, 4, 2, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(69, 13, 4, 3, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(69, 18, 4, 4, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(69, 23, 4, 5, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(69, 28, 4, 6, 3, 13, docentes[i].nombre_doc, materia, sede);
+    // DIAAAAAAAAAAA VIERNESSSSSSSSSSSSSSSSS
+    horario_asig(88, 3, 5, 1, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(88, 8, 5, 2, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(88, 13, 5, 3, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(88, 18, 5, 4, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(88, 23, 5, 5, 3, 13, docentes[i].nombre_doc, materia, sede);
+    horario_asig(88, 28, 5, 6, 3, 13, docentes[i].nombre_doc, materia, sede);*/
+    // PARA EVITAR ESCRITURA INDEBIDAS
+    gotoxy(0, 33);
+    return 0;
+}
+
+int horario_asig(int x, int y, int dia, int hora, int seccion, int aula, char *nombre, char *materia, char *sede)
+{
+
+    if ((horario[dia][hora].entero) == 1)
+    {
+        gotoxy(x, y);
+        printf("%s", nombre);
+        gotoxy(x, y + 1);
+        printf("%s", materia);
+        gotoxy(x, y + 2);
+        printf("Secc %d - Au %d", seccion, aula);
+        gotoxy(x, y + 3);
+        printf("%s", sede);
+    }
+    else
+    {
+        gotoxy(x, y + 1);
+        printf("    HORARIO  ");
+        gotoxy(x, y + 2);
+        printf("  NO ASIGNADO");
+    }
+    return 0;
+}
+
+int HILOS_HORARIO()
+{
+    horario_mostrar();
+    HANDLE threadHandle;
+    DWORD threadId;
+    threadHandle = CreateThread(NULL, 0, hilos_docentes, NULL, 0, &threadId);
+    if (threadHandle == NULL)
+    {
+        printf("Error al crear el hilo\n");
+        return 1;
+    }
+    WaitForSingleObject(threadHandle, INFINITE);
+    CloseHandle(threadHandle);
+    printf("Fin del programa principal\n\n");
+    system("pause");
+    return 0;
+}
+
+// PARTE MENOS IMPORTANTES ARREGLOS GRAFICOS
+void icon()
+{
+    HWND hwnd = GetConsoleWindow();
+    // Cargar el icono desde un archivo .ico
+    HICON hIcon = (HICON)LoadImage(NULL, "data/icon.ico", IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
+    // Establecer el nuevo icono para la ventana
+    SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+    SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+    return;
 }
