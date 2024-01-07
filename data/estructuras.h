@@ -181,21 +181,12 @@ int carga_de_datos_doc(int cantidad_doc, struct ElementoHorario horario[5][6])
 int verificacion_de_realidad(char *numero, int x)
 {
     int longitud = strlen(numero);
-    for (int i = 0; i < longitud; i++)
-    {
-        if (!isdigit(numero[i]))
-        {
-            printf("Entrada no v%clida - Intente Nuevamente > ", aa);
-            return 0; // número incorrecto
-        }
-    }
     if (x == 0)
     {
         if (longitud != 11)
         {
             return 0; // número incorrecto
         }
-
         if (strncmp(numero, "0412", 4) != 0 && strncmp(numero, "0414", 4) != 0 && strncmp(numero, "0416", 4) != 0 && strncmp(numero, "0424", 4) != 0 && strncmp(numero, "0426", 4) != 0)
         {
             return 0; // número incorrecto
@@ -208,27 +199,30 @@ int verificacion_de_realidad(char *numero, int x)
         {
             if (longitud != 8 && longitud != 7)
             {
-                printf("Error - Ingrese su c%cdula nuevamente > ", e);
                 return 0; // número incorrecto
             }
         }
         else if (num < 7000000)
         {
-            printf("El docente no esta vivo :v - Ingrese nuevamente > ");
             return 0; // Número incorrecto
         }
         else if (num > 34999999)
         {
-            printf("Personas con esa c%cdula todavia no existen - Ingrese nuevamente > ", e, o);
             return 0; // Número incorrecto
         }
         else
         {
-            printf("Esa c%cdula es de una persona demasiado j%cven - Ingrese nuevamente > ", e, o);
             return 0; // Número incorrecto
         }
     }
-    return 1; // número correctoo
+    for (int i = 0; i < longitud; i++)
+    {
+        if (!isdigit(numero[i]))
+        {
+            return 0; // número incorrecto
+        }
+    }
+    return 1; // número correcto
 }
 void disponibilidad_de_horario(int diaa, int i, char *nombre_doc, char *apellido_doc)
 {
@@ -262,48 +256,17 @@ void disponibilidad_de_horario(int diaa, int i, char *nombre_doc, char *apellido
                     ;
             }
         } while (0);
-        switch (hora)
+        if (hora >= 1 && hora <= 6)
         {
-        case 1:
-            if (!verificar_hora(diaa, 1, nombre_doc, apellido_doc, horario))
+            if (!verificar_hora(diaa, hora, nombre_doc, apellido_doc, horario))
             {
                 y--;
             }
-            break;
-        case 2:
-            if (!verificar_hora(diaa, 2, nombre_doc, apellido_doc, horario))
-            {
-                y--;
-            }
-            break;
-        case 3:
-            if (!verificar_hora(diaa, 3, nombre_doc, apellido_doc, horario))
-            {
-                y--;
-            }
-            break;
-        case 4:
-            if (!verificar_hora(diaa, 4, nombre_doc, apellido_doc, horario))
-            {
-                y--;
-            }
-            break;
-        case 5:
-            if (!verificar_hora(diaa, 5, nombre_doc, apellido_doc, horario))
-            {
-                y--;
-            }
-            break;
-        case 6:
-            if (!verificar_hora(diaa, 6, nombre_doc, apellido_doc, horario))
-            {
-                y--;
-            }
-            break;
-        default:
+        }
+        else
+        {
             printf(" Error de numero. \n");
             y--;
-            break;
         }
     }
     return;
@@ -513,7 +476,7 @@ int comparador(const void *a, const void *b)
     return strcmp(((struct docente *)a)->cedula_d, ((struct docente *)b)->cedula_d);
 }
 
-void carga_de_materias(int cantidad_doc)
+void mostrar_docentes(int cantidad_doc)
 {
     FILE *registros_docentes;
     struct docente docentes[42];
@@ -522,20 +485,45 @@ void carga_de_materias(int cantidad_doc)
     {
         fread(docentes, sizeof(struct docente), 42, registros_docentes);
         fclose(registros_docentes);
-        // Ordenar el arreglo de docentes por cédula
-        qsort(docentes, cantidad_doc, sizeof(struct docente), comparador);
+        qsort(docentes, cantidad_doc, sizeof(struct docente), comparador); // Ordenar el arreglo de docentes por cédula
+        printf("Mostrando datos de los docentes ordenados por CI\n");
         for (int j = 0; j < cantidad_doc; j++)
         {
-            printf("\nC%cdula: %s\n", e, docentes[j].cedula_d);
+            printf("Docente N(%d)\n", j+1);
             printf("Nombre: %s\n", docentes[j].nombre_doc);
             printf("Apellido: %s\n", docentes[j].apellido_doc);
-            printf("Semestre que pertenece: %s\n", docentes[j].semestre);
+            printf("C%cdula: %s\n", e, docentes[j].cedula_d);
+            printf("Semestre que pertenece: %d\n", docentes[j].semestre);
             printf("Tel%cfono: %s\n", e, docentes[j].telefono_d);
         }
     }
     else
     {
-        printf("NULL - Error");
+        printf("NULL - Error archivo no encontrado\n");
     }
     return;
+}
+struct materias
+{
+   char nombre;
+   int unidades, prelacion, cupos, sede, semestre;
+};
+
+int carga_de_materia(){
+    struct materias materias[12];
+    printf("Ingrese nombre de la materia\n");
+    scanf("%s", materias[i].nombre);
+    printf("Ingrese unidades de creditos");
+    scanf("%d", materias[i].unidades);
+    printf("Ingrese la prelaci%cn \n", o);
+    scanf("%d", materias[i].prelacion);
+    printf("Cantidad de cupos de la materia\n");
+    scanf("%d", materias[i].cupos);
+    printf("Sede donde se dictara la materia.\n");
+    scanf("%d", materias[i].sede);
+    printf("Semestre al que pertenece\n");
+    scanf("%d", materias[i].semestre);
+
+
+return 0;
 }

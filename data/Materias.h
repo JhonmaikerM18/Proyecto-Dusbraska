@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 struct materia
 {
 	char nombre[60];
@@ -14,7 +12,7 @@ struct materia
 	char sede_1[40];
 	char pertenece[40];
 	int horas;
-	int random;
+	int nmateria;
 };
 
 	// Primer semestre.
@@ -23,15 +21,15 @@ struct materia
 	// Orientacion y cultura universitaria.
 	struct materia orientacion = {"Orientacion y cultura universitaria", 2, 1472102, 105, 0, 0, 0, "---", "Villa Asia", "Atlantico", "Primer semestre", 2,2};
 	// Tecnicas de estudio e investigacion.
-	struct materia Tecnica_est = {"Tecnica de estudio", 2, 1472103, 105, 0, 0, 0, "---", "Altlantico", "---", "Primer semestre", 2,3};
+	struct materia Tecnica_est = {"Tecnica de estudio", 2, 1472103, 105, 0, 0, 0, "---", "Atlantico", "---", "Primer semestre", 2,3};
 	// Matematica_1.
-	struct materia matematica_1 = {"Matematica 1", 4, 1472104, 105, 0, 0, 0, "---", "Altlantico", "---", "Primer semtres", 2,4};
+	struct materia matematica_1 = {"Matematica 1", 4, 1472104, 105, 0, 0, 0, "---", "Atlantico", "---", "Primer semtres", 2,4};
 	// Quimica general.
-	struct materia quimica = {"Quimica", 4, 1472105, 105, 0, 0, 0, "---", "Altlantico", "---", "Primer semestre", 2,5};
+	struct materia quimica = {"Quimica", 4, 1472105, 105, 0, 0, 0, "---", "Atlantico", "---", "Primer semestre", 2,5};
 	// Fundamentos de la informatica.
 	struct materia funda_inform = {"Fundamento de la informatica", 4, 1472106, 105, 0, 0, 0, "---", "Altlantico", "---", "Primer semestre", 2,6};
 	// Logica computacional.
-	struct materia lo_compu = {"Logica computacional", 4, 1472107, 105, 0, 0, 0, "---", "Altlantico", "---", "Primer semestre", 2,7};
+	struct materia lo_compu = {"Logica computacional", 4, 1472107, 105, 0, 0, 0, "---", "Atlantico", "---", "Primer semestre", 2,7};
 
 	// Segundo semestre.
 

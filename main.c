@@ -30,7 +30,8 @@ int main()
             valido = 1;
             fflush(stdin);
             carga_de_datos_doc(cantidad_doc, horario);
-            carga_de_materias(cantidad_doc);
+            carga_de_materia();
+            mostrar_docentes(cantidad_doc);
         }
     }
     // HILOS_HORARIO();
