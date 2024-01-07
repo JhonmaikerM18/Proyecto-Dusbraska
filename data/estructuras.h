@@ -9,18 +9,15 @@ char apellido_doc[40];
 struct docente
 {
     char nombre_doc[40], apellido_doc[40], telefono_d[13], cedula_d[10];
-    int secciones_doc, disp_doc, insc_doc[4], dia[4];
+    int secciones_doc, disp_doc, insc_doc[4], dia[4], semestre;
 };
-
 struct ElementoHorario
 {
     char nombre[12];
     int entero;
     char apellido[12];
 };
-
 struct ElementoHorario horario[5][6];
-
 // FUNCIONES PROTOTIPO
 void random();
 void disponibilidad_de_horario(int, int, char *, char *);
@@ -33,21 +30,11 @@ void gotoxy(int, int);
 void horario_mostrar();
 DWORD WINAPI hilos_docentes(LPVOID lpParam);
 int HILOS_HORARIO();
-// PARTE FINAL ARREGLO GRAFICOS NOMAS
 
-int carga_de_datos_doc(int cantidad_doc)
+int carga_de_datos_doc(int cantidad_doc, struct ElementoHorario horario[5][6])
 {
-    for (int x = 0; x < 5; x++)
-    {
-        for (int j = 0; j < 6; j++)
-        {
-            strcpy(horario[i][j].nombre, ""); // Establecer el nombre en blanco
-            horario[x][j].entero = 0;         // Establecer el entero en cero
-        }
-    }
     system("cls");
     struct docente docentes[cantidad_doc];
-    struct ElementoHorario horario[5][6];
     FILE *registros_docente;
     registros_docente = fopen("data/registros_doc", "wb");
     if (registros_docente)
@@ -61,17 +48,31 @@ int carga_de_datos_doc(int cantidad_doc)
             printf("Apellido del docente > ");
             scanf("%s", docentes[i].apellido_doc);
             fflush(stdin);
-            /*printf("Ingrese la c%cdula del docente > ", e);
+            printf("Semestre del docente > ");
+            do
+            {
+                if (scanf("%d", &docentes[i].semestre) != 1)
+                {
+                    printf("Error: Entrada no v%clida - Ingrese nuevamente > ", aa);
+                    while (getchar() != '\n')
+                        ;
+                }
+                else if (docentes[i].semestre < 1 || docentes[i].semestre > 9)
+                {
+                    printf("Error: N%cmero no v%clido - Ingrese nuevamente > ", u, aa);
+                }
+            } while (docentes[i].semestre < 1 || docentes[i].semestre > 9);
+            fflush(stdin);
+            printf("Ingrese la c%cdula del docente > ", e);
             scanf("%s", docentes[i].cedula_d);
             fflush(stdin);
-
             while (!verificacion_de_realidad(docentes[i].cedula_d, 1))
             {
                 scanf("%s", docentes[i].cedula_d);
                 fflush(stdin);
             }
 
-            printf("Ingrese un n%cmero de tel%cfono > ", u, e);
+            /*printf("Ingrese un n%cmero de tel%cfono > ", u, e);
             scanf("%s", docentes[i].telefono_d);
             fflush(stdin);
 
@@ -95,6 +96,7 @@ int carga_de_datos_doc(int cantidad_doc)
             fflush(stdin);
             for (int j = 0; j < 1; j++)
             {
+
                 int dia;
                 scanf("%d", &dia);
                 fflush(stdin);
@@ -108,7 +110,6 @@ int carga_de_datos_doc(int cantidad_doc)
                     }
                     else
                     {
-
                         disponibilidad_de_horario(1, i, nombre_doc, apellido_doc);
                     }
                     break;
@@ -177,21 +178,19 @@ int carga_de_datos_doc(int cantidad_doc)
     }
     return 0;
 }
-
 int verificacion_de_realidad(char *numero, int x)
 {
     int longitud = strlen(numero);
-
     for (int i = 0; i < longitud; i++)
     {
         if (!isdigit(numero[i]))
         {
+            printf("Entrada no v%clida - Intente Nuevamente > ", aa);
             return 0; // número incorrecto
         }
     }
     if (x == 0)
     {
-
         if (longitud != 11)
         {
             return 0; // número incorrecto
@@ -229,10 +228,8 @@ int verificacion_de_realidad(char *numero, int x)
             return 0; // Número incorrecto
         }
     }
-
     return 1; // número correctoo
 }
-
 void disponibilidad_de_horario(int diaa, int i, char *nombre_doc, char *apellido_doc)
 {
     struct docente docentes[cantidad_doc];
@@ -265,7 +262,6 @@ void disponibilidad_de_horario(int diaa, int i, char *nombre_doc, char *apellido
                     ;
             }
         } while (0);
-
         switch (hora)
         {
         case 1:
@@ -310,10 +306,8 @@ void disponibilidad_de_horario(int diaa, int i, char *nombre_doc, char *apellido
             break;
         }
     }
-
     return;
 }
-
 int verificar_hora(int dia, int hora, char *nombre, char *apellido, struct ElementoHorario horario[5][6])
 {
     if ((horario[dia][hora].entero == 0))
@@ -330,7 +324,6 @@ int verificar_hora(int dia, int hora, char *nombre, char *apellido, struct Eleme
         return 0;
     }
 }
-
 int verificar_numero(char *cadena)
 {
     int j = 0;
@@ -347,16 +340,13 @@ int verificar_numero(char *cadena)
         return 0;
     }
 }
-
 void random(int *k, int x)
 {
-    int j = 0;
-    for (j = 0; j < x; j++)
+    for (int j = 0; j < x; j++)
     {
         k[j] = ((rand() % 15) + 20);
     }
 }
-
 void horario_mostrar()
 {
     HWND hwnd = GetConsoleWindow();
@@ -373,7 +363,6 @@ void horario_mostrar()
             printf("%c\n", s);
         }
     }
-
     // LINEASSSSSS VERTICALESS
     int y_posiciones[] = {0, 11, 30, 49, 68, 87, 106};
     for (int y = 0; y < 7; y++)
@@ -384,11 +373,9 @@ void horario_mostrar()
             printf("%c\n", d);
         }
     }
-
     /// DIA DE SEMANAAA
     gotoxy(3, 1);
     printf("HORA");
-
     gotoxy(3, 3);
     printf("7:50 \n%c   A \n%c  8:40", d, d); // 1
     gotoxy(3, 8);
@@ -401,29 +388,21 @@ void horario_mostrar()
     printf("11:55 \n%c    A \n%c  12:40", d, d); // 5
     gotoxy(3, 28);
     printf("12:45 \n%c    A \n%c  01:40", d, d); // 6
-
     // DIA DE LA SEMANA
     gotoxy(17, 1);
     printf("LUNES");
-
     gotoxy(36, 1);
     printf("MARTES");
-
     gotoxy(54, 1);
     printf("MIERCOLES");
-
     gotoxy(74, 1);
     printf("JUEVES");
-
     gotoxy(93, 1);
     printf("VIERNES");
-
     return;
 }
-
 DWORD WINAPI hilos_docentes(LPVOID lpParam)
 {
-    // struct ElementoHorario (*horario)[6] = (struct ElementoHorario (*)[6])lpParam;
     char materia[] = "Fundamentos";
     char sede[] = "Villa asia";
     // Pudiera crear un (FOR) > Para esto pero prefiero manejarlo asi
@@ -466,7 +445,6 @@ DWORD WINAPI hilos_docentes(LPVOID lpParam)
     gotoxy(0, 33);
     return 0;
 }
-
 int horario_asig(int x, int y, int dia, int hora, int seccion, int aula, char *nombre, char *apellido, char *materia, char *sede, struct ElementoHorario horario[5][6])
 {
     if ((horario)[dia][hora].entero == 1)
@@ -491,9 +469,6 @@ int horario_asig(int x, int y, int dia, int hora, int seccion, int aula, char *n
     }
     return 0;
 }
-
-#include <windows.h>
-
 int HILOS_HORARIO()
 {
     horario_mostrar();
@@ -510,10 +485,8 @@ int HILOS_HORARIO()
     CloseHandle(threadHandle);
     printf("Fin del programa principal\n\n");
     system("pause>clear");
-
     return 0;
 }
-
 // PARTE MENOS IMPORTANTES ARREGLOS GRAFICOS
 void icon()
 {
@@ -533,4 +506,36 @@ void gotoxy(int x, int y)
     dwPos.X = x;
     dwPos.Y = y;
     SetConsoleCursorPosition(hCon, dwPos);
+}
+// Función de comparación para qsort
+int comparador(const void *a, const void *b)
+{
+    return strcmp(((struct docente *)a)->cedula_d, ((struct docente *)b)->cedula_d);
+}
+
+void carga_de_materias(int cantidad_doc)
+{
+    FILE *registros_docentes;
+    struct docente docentes[42];
+    registros_docentes = fopen("data/registros_doc", "rb");
+    if (registros_docentes)
+    {
+        fread(docentes, sizeof(struct docente), 42, registros_docentes);
+        fclose(registros_docentes);
+        // Ordenar el arreglo de docentes por cédula
+        qsort(docentes, cantidad_doc, sizeof(struct docente), comparador);
+        for (int j = 0; j < cantidad_doc; j++)
+        {
+            printf("\nC%cdula: %s\n", e, docentes[j].cedula_d);
+            printf("Nombre: %s\n", docentes[j].nombre_doc);
+            printf("Apellido: %s\n", docentes[j].apellido_doc);
+            printf("Semestre que pertenece: %s\n", docentes[j].semestre);
+            printf("Tel%cfono: %s\n", e, docentes[j].telefono_d);
+        }
+    }
+    else
+    {
+        printf("NULL - Error");
+    }
+    return;
 }
