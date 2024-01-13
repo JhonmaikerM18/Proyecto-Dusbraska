@@ -30,9 +30,13 @@ void gotoxy(int, int);
 void horario_mostrar();
 DWORD WINAPI hilos_docentes(LPVOID lpParam);
 int HILOS_HORARIO();
-
+void cursor(int);
+void pantalla_carga(int x, int y, int xx, int z, int zz, int tiempo, int segundos);
+void centrar_t(char *texto, int x, int y);
+void cuadro(int xs, int ys, int xi, int yi);
 int carga_de_datos_doc(int cantidad_doc, struct ElementoHorario horario[5][6])
 {
+    int i;
     system("cls");
     struct docente docentes[cantidad_doc];
     FILE *registros_docente;
@@ -72,7 +76,7 @@ int carga_de_datos_doc(int cantidad_doc, struct ElementoHorario horario[5][6])
                 fflush(stdin);
             }
 
-            /*printf("Ingrese un n%cmero de tel%cfono > ", u, e);
+            printf("Ingrese un n%cmero de tel%cfono > ", u, e);
             scanf("%s", docentes[i].telefono_d);
             fflush(stdin);
 
@@ -86,7 +90,7 @@ int carga_de_datos_doc(int cantidad_doc, struct ElementoHorario horario[5][6])
             random(docentes[i].insc_doc, 3);
             srand(time(NULL));
 
-            fflush(stdin);*/
+            fflush(stdin);
 
             printf("\nLunes = 1  /  Martes  = 2  /  Mi%crcoles = 3 / Jueves = 4  /  Viernes = 5\n", e);
             printf("Ingrese el d%ca disponible del docente > ", ai);
@@ -230,20 +234,21 @@ void disponibilidad_de_horario(int diaa, int i, char *nombre_doc, char *apellido
     int hora;
     system("cls");
     printf("    Ingrese el horario disponible del docente \n");
-    printf("           El docente tiene 3 horas \n");
-    printf("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", cs, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, cm, s, s, s, s, s, s, s, s, s, s, s, css);
-    printf("   %c     HORA        %c   NUMERO  %c\n", d, d, d);
-    printf("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", d, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, mm, s, s, s, s, s, s, s, s, s, s, s, d);
-    printf("   %c                 %c           %c\n", d, d, d);
-    printf("   %c  7:50 A 8:40    %c    (1)    %c\n", d, d, d);
-    printf("   %c  8:45 A 9:35    %c    (2)    %c\n", d, d, d);
-    printf("   %c  9:35 A 10:30   %c    (3)    %c\n", d, d, d);
-    printf("   %c 11:00 A 11:50   %c    (4)    %c\n", d, d, d);
-    printf("   %c 11:55 A 12:40   %c    (5)    %c\n", d, d, d);
-    printf("   %c 12:45 A 01:40   %c    (6)    %c\n", d, d, d);
+    printf("           El docente tiene 3 horas ");
+    gotoxy(4,3);
+    printf("      HORA      %c    NUMERO  \n",  d);
+    printf("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", d, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, mm, s, s, s,s,s,s, s, s, s, s, s, s, s, s, d);
+    printf("                    %c           \n",  d);
+    printf("      7:50 A 8:40   %c    (1)    \n",  d);
+    printf("      8:45 A 9:35   %c    (2)    \n",  d);
+    printf("      9:35 A 10:30  %c    (3)    \n",  d);
+    printf("     11:00 A 11:50  %c    (4)    \n",  d);
+    printf("     11:55 A 12:40  %c    (5)    \n",  d);
+    printf("     12:45 A 01:40  %c    (6)    \n",  d);
     // printf("   %c 01:15 A 03:00   %c   (7)     %c\n", d, d, d);
-    printf("   %c                 %c           %c\n", d, d, d);
-    printf("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", ds, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, dm, s, s, s, s, s, s, s, s, s, s, s, dss);
+    printf("                    %c           \n", d);
+    cuadro(3,2,34,13);
+    gotoxy(0,15);
     for (int y = 0; y < Hora_x_doc; y++)
     {
         do
@@ -315,7 +320,7 @@ void horario_mostrar()
     HWND hwnd = GetConsoleWindow();
     ShowWindow(hwnd, SW_MAXIMIZE);
     system("mode con: cols=120 lines=37");
-    printf("%c", cs);
+    printf("%c", 218);
     // LINEASSSSSS HORIZONTALESSS
     int x_posiciones[] = {0, 2, 7, 12, 17, 22, 27, 32};
     for (int x = 0; x < 8; x++)
@@ -461,6 +466,53 @@ void icon()
     SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
     return;
 }
+void pantalla_carga(int x, int y, int xx, int z, int zz, int tiempo, int segundos)
+{
+    cursor(0);
+    centrar_t("CARGANDO.   - ESPERE UN MOMENTO ", x, y);
+    for (int i = 0; i < 3; i++)
+    {
+        if (i == 1)
+        {
+            centrar_t("CARGANDO..  - ESPERE UN MOMENTO ", x, y);
+        }
+        if (i == 2)
+        {
+            centrar_t("CARGANDO... - ESPERE UN MOMENTO ", x, y);
+        }
+
+        for (int i = z; i < zz; i++)
+        {
+            gotoxy(i, y + 2);
+            printf("%c", 177);
+        }
+        for (int i = z; i < zz; i++)
+        {
+            gotoxy(i, y + 2);
+            printf("%c", 219);
+            Sleep(tiempo);
+        }
+        Sleep(50);
+    }
+    for (int i = z; i < zz; i++)
+    {
+        gotoxy(i, y + 2);
+        printf(" ");
+    }
+    centrar_t("                                      ", x, y);
+    centrar_t("CARGA COMPLETADA", x, y);
+    for (int i = 3; i >= 1; i--)
+    {
+        gotoxy(x - 9, y + 2);
+        printf("SERA ENVIADO EN (%d)", i);
+        Sleep(segundos);
+        centrar_t("                      ", x, y + 2);
+    }
+    gotoxy(0, 0);
+    system("cls");
+    cursor(1);
+    return;
+}
 void gotoxy(int x, int y)
 {
     HANDLE hCon;
@@ -470,6 +522,30 @@ void gotoxy(int x, int y)
     dwPos.Y = y;
     SetConsoleCursorPosition(hCon, dwPos);
 }
+void centrar_t(char *texto, int x, int y)
+{
+    int longitud = strlen(texto);
+    gotoxy(x - (longitud / 2), y);
+    printf(texto);
+}
+void cursor(int x)
+{
+    if (x == 0)
+    {
+        printf("\e[?25l");
+    }
+    if (x == 1)
+    {
+        printf("\e[?25h");
+    }
+}
+void bloqueo_maximizar()
+{
+    HWND consoleWindow;
+    consoleWindow = GetConsoleWindow();
+    SetWindowLong(consoleWindow, GWL_STYLE, GetWindowLong(consoleWindow, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX);
+}
+
 // Función de comparación para qsort
 int comparador(const void *a, const void *b)
 {
@@ -489,7 +565,7 @@ void mostrar_docentes(int cantidad_doc)
         printf("Mostrando datos de los docentes ordenados por CI\n");
         for (int j = 0; j < cantidad_doc; j++)
         {
-            printf("Docente N(%d)\n", j+1);
+            printf("Docente N(%d)\n", j + 1);
             printf("Nombre: %s\n", docentes[j].nombre_doc);
             printf("Apellido: %s\n", docentes[j].apellido_doc);
             printf("C%cdula: %s\n", e, docentes[j].cedula_d);
@@ -505,25 +581,64 @@ void mostrar_docentes(int cantidad_doc)
 }
 struct materias
 {
-   char nombre;
-   int unidades, prelacion, cupos, sede, semestre;
+    char nombre[50];
+    int unidades, prelacion, cupos, sede, semestre;
 };
 
-int carga_de_materia(){
+int carga_de_materia()
+{
+    int i;
+    system("cls");
     struct materias materias[12];
-    printf("Ingrese nombre de la materia\n");
-    scanf("%s", materias[i].nombre);
-    printf("Ingrese unidades de creditos");
-    scanf("%d", materias[i].unidades);
-    printf("Ingrese la prelaci%cn \n", o);
-    scanf("%d", materias[i].prelacion);
-    printf("Cantidad de cupos de la materia\n");
-    scanf("%d", materias[i].cupos);
-    printf("Sede donde se dictara la materia.\n");
-    scanf("%d", materias[i].sede);
-    printf("Semestre al que pertenece\n");
-    scanf("%d", materias[i].semestre);
-
-
-return 0;
+    printf("Ingrese nombre de la materia > ");
+    scanf("%s", &materias[i].nombre);
+    fflush(stdin);
+    printf("Semestre al que pertenece > ");
+    do
+    {
+        if (scanf("%d", &materias[i].semestre) != 1)
+        {
+            printf("Error: Entrada no v%clida - Ingrese nuevamente > ", aa);
+            while (getchar() != '\n')
+                ;
+        }
+        else if (materias[i].semestre < 1 || materias[i].semestre > 9)
+        {
+            printf("Error: N%cmero no v%clido - Ingrese nuevamente > ", u, aa);
+        }
+    } while (materias[i].semestre < 1 || materias[i].semestre > 9);
+    printf("Ingrese unidades de creditos > ");
+    scanf("%d", &materias[i].unidades);
+    printf("Ingrese la prelaci%cn > ", o);
+    scanf("%d", &materias[i].prelacion);
+    printf("Cantidad de cupos de la materia >");
+    scanf("%d", &materias[i].cupos);
+    printf("Sede donde se dictara la materia > ");
+    scanf("%d", &materias[i].sede);
+    return 0;
+}
+void cuadro(int xs, int ys, int xi, int yi)
+{
+    for (int i = xs; i < xi; i++)
+    {
+        gotoxy(i, ys);
+        printf("%c", 196);
+        gotoxy(i, yi);
+        printf("%c", 196);
+    }
+    for (int i = ys; i <= yi; i++)
+    {
+        gotoxy(xs, i);
+        printf("%c", 179);
+        gotoxy(xi, i);
+        printf("%c", 179);
+    }
+    gotoxy(xs, ys);
+    printf("%c", 218);
+    gotoxy(xi, yi);
+    printf("%c", 217);
+    gotoxy(xi, ys);
+    printf("%c", 191);
+    gotoxy(xs, yi);
+    printf("%c", 192);
 }
