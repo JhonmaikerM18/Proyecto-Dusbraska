@@ -11,6 +11,15 @@ struct materia
 	int horas;
 	int nmateria;
 };
+struct libre_materia
+{
+	char nombre[60], sede[12];
+	int unidades, codigo, cupos, prelacion, seccion, pertenece, horas, semestre, alumnos_inscritos, docentes[3];
+};
+struct asignacion{
+	char nombre_doc[30], nombre_mat[30];
+	int numero;
+};
 
 // Primer semestre.
 struct materia compresion = {"Compresion y expresion linguistica", 3, 1472101, 105, 0, "---", 1, 1, 2, 1};
@@ -47,7 +56,7 @@ struct materia estadistica_1 = {"Estadistica 1", 3, 1472423, 105, 1472209, "---"
 struct materia tecnicas_programacion_3 = {"Tecnicas de programacion 3", 4, 1472424, 105, 1472321, "---", 1, 4, 2, 24};
 struct materia csd = {"Circuitos y sistemas digitales", 4, 1472425, 105, 1472316, "---", 1, 2, 2, 25};
 struct materia laboratorio_fisica_2 = {"Laboratorio de fisica 2", 2, 1472427, 105, 1472316, "---", 0, 4, 2, 26};
-struct materia estructura_de_datos = {"Estructura de datos", 4, 1472428, 105, 1472320,  "---", 1, 4, 2, 27};
+struct materia estructura_de_datos = {"Estructura de datos", 4, 1472428, 105, 1472320, "---", 1, 4, 2, 27};
 
 // Quinto semestre.
 
@@ -56,7 +65,7 @@ struct materia estadistica_2 = {"Estadistica_2", 3, 1472529, 105, 1472423, "---"
 struct materia base_de_datos_1 = {"Sistema de bases de datos_1", 4, 1472530, 105, 1472424, "---", 1, 5, 2, 29};
 struct materia A_computador = {"Arquitectura del computador", 3, 1472531, 105, 1472425, "---", 1, 5, 2, 30};
 struct materia C_numerico = {"Calculo numerico", 4, 1472530, 105, 1472422, "---", 1, 5, 2, 31};
-struct materia finanzas = {"Finanzas para ingeniero", 3, 1472533, 105, 1472214,"---", 1, 5, 2, 32};
+struct materia finanzas = {"Finanzas para ingeniero", 3, 1472533, 105, 1472214, "---", 1, 5, 2, 32};
 struct materia algebra_de_estructuras = {"Algebra de estructuras", 3, 1472534, 105, 1472320, "---", 1, 5, 2, 33};
 // Sexto semestre.
 
@@ -85,4 +94,4 @@ struct materia telecomunicaciones_1 = {"Telecomunicaciones_1", 3, 2472850, 105, 
 struct materia sistemas_distribuidos = {"Sistemas distribuidos", 3, 2472851, 105, 2472744, "---", 1, 8, 2, 50};
 
 // Noveno
-struct materia servicio_comunitatario = {"SERVICIO COMUNITARIO", 0,4000101,0,0 ,"---",0,0,0,51}	;
+struct materia servicio_comunitatario = {"SERVICIO COMUNITARIO", 0, 4000101, 0, 0, "---", 0, 0, 0, 51};
