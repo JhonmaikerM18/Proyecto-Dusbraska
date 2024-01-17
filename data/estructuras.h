@@ -2,29 +2,10 @@
 int valido_doc;
 int valido = 0;
 int numDocentes;
-char nombre[40];
-char apellido[40];
-
+int cantidad_horario;
 // Definici�n de la estructura de Docente
-struct docente
-{
-    char nombre[40], apellido[40], telefono_d[13], cedula_d[40], materia[30];
-    int secciones_doc, disp_doc, insc_doc[4], dia[4], semestre;
-};
-struct ElementoHorario
-{
-    char nombre[12];
-    char apellido[12];
-    int entero;
-    int cantidad_de_docentes;
-};
-struct advertencia
-{
-    int materia;
-    int docentes;
-};
 struct advertencia peligro;
-struct ElementoHorario horario[5][6];
+struct ElementoHorario horario[4][5];
 // FUNCIONES PROTOTIPO
 void mostrar_docentes(int numDocentes);
 void random();
@@ -42,7 +23,7 @@ void horario_mostrar();
 DWORD WINAPI hilos_docentes(LPVOID lpParam);
 void HILOS_HORARIO();
 void cursor(int);
-int carga_de_datos_doc(int numDocentes, struct ElementoHorario horario[5][6]);
+int carga_de_datos_doc(int numDocentes, struct ElementoHorario horario[4][5]);
 void pantalla_carga(int x, int y, int xx, int z, int zz, int tiempo, int segundos);
 void centrar_t(char *texto, int x, int y);
 void cuadro(int xs, int ys, int xi, int yi);
@@ -55,31 +36,26 @@ void menu_est()
     int opcion;
     HWND hwnd = GetConsoleWindow();
     SetConsoleTitle("HORARIO - MENU DE INICIO");
+    system("mode con: cols=80 lines=25");
     bloqueo_maximizar();
-    FILE *config;
-    int isFirstTime = 0;
-    config = fopen(configuraciones, "r");
+    FILE *config = fopen(configuraciones, "r");
     if (config == NULL)
     {
-        isFirstTime = 1;
-    }
-    fclose(config);
-    if (isFirstTime)
-    {
         printf("Limpiando las estructuras...\n");
-        struct ElementoHorario horario[5][6] = {0};
+        struct ElementoHorario horario[4][5] = {0};
         struct docente docentes[100] = {0};
         config = fopen(configuraciones, "w");
         if (config != NULL)
         {
-            fprintf(config, "1");
-            fclose(config); // Cerrar el archivo después de escribir
+            fprintf(config, "Estructuras limpiadas.");
+            fclose(config);
         }
         else
         {
             printf("Error al crear el archivo de configuración\n");
         }
     }
+    fclose(config);
     do
     {
         system("cls");
@@ -126,7 +102,6 @@ void menu_est()
                     valido = 1;
                 }
             }
-
             break;
         case 2:
             SetConsoleTitle("HORARIO - CARGA DE DATOS DE LAS MATERIAS");
@@ -240,7 +215,7 @@ void eliminar_fichero(const char *fichero)
     return;
 }
 
-int carga_de_datos_doc(int numDocentes, struct ElementoHorario horario[5][6])
+int carga_de_datos_doc(int numDocentes, struct ElementoHorario horario[4][5])
 {
     int i;
     system("cls");
@@ -258,129 +233,63 @@ int carga_de_datos_doc(int numDocentes, struct ElementoHorario horario[5][6])
             scanf("%s", docentes[i].apellido);
             fflush(stdin);
             printf("Semestre del docente > ");
-            do
+            while (scanf("%d", &docentes[i].semestre) != 1 || docentes[i].semestre < 1 || docentes[i].semestre > 9)
             {
-                if (scanf("%d", &docentes[i].semestre) != 1)
-                {
-                    printf("Error: Entrada no v%clida - Ingrese nuevamente > ", aa);
-                    while (getchar() != '\n')
-                        ;
-                }
-                else if (docentes[i].semestre < 1 || docentes[i].semestre > 9)
-                {
-                    printf("Error: N%cmero no v%clido - Ingrese nuevamente > ", u, aa);
-                }
-            } while (docentes[i].semestre < 1 || docentes[i].semestre > 9);
-            fflush(stdin);
+                printf("Error: Ingrese un n%cmero v%clido (1-9) > ", u, aa);
+                while (getchar() != '\n')
+                    ;
+            }
             printf("Ingrese la c%cdula del docente > ", e);
             scanf("%s", docentes[i].cedula_d);
-            fflush(stdin);
             while (!verificacion_de_realidad(docentes[i].cedula_d, 1))
             {
-                limpia_linea(6);
                 printf("Ingrese nuevamente >> ");
                 scanf("%s", docentes[i].cedula_d);
-                fflush(stdin);
             }
-
             printf("Ingrese un n%cmero de tel%cfono > ", u, e);
             scanf("%s", docentes[i].telefono_d);
-            fflush(stdin);
-
             while (!verificacion_de_realidad(docentes[i].telefono_d, 0))
             {
-                limpia_linea(7);
                 printf("Error - Ingrese un n%cmero de tel%cfono correcto > ", u, e);
                 scanf("%s", docentes[i].telefono_d);
-                fflush(stdin);
             }
-
             random(docentes[i].insc_doc, 3);
             srand(time(NULL));
 
             fflush(stdin);
 
-            printf("\nLunes = 1  /  Martes  = 2  /  Mi%crcoles = 3 / Jueves = 4  /  Viernes = 5\n", e);
-            printf("Ingrese el d%ca disponible del docente > ", ai);
+            printf("\nLunes = 1  /  Martes  = 2  /  Miércoles = 3 / Jueves = 4  /  Viernes = 5\n");
+            printf("Ingrese el día disponible del docente > ");
+            char nombre[13], apellido[5];
             strncpy(nombre, docentes[i].nombre, 12);
-            fflush(stdin);
             strncpy(apellido, docentes[i].apellido, 4);
-            fflush(stdin);
             for (int j = 0; j < 1; j++)
             {
-
                 int dia;
                 scanf("%d", &dia);
-                fflush(stdin);
-                switch (dia)
+                dia--;
+                if (dia >= 0 && dia <= 4)
                 {
-                case 1:
-                    if ((horario[1][1].entero && horario[1][2].entero && horario[1][3].entero && horario[1][4].entero && horario[1][5].entero && horario[1][6].entero) == 1)
+                    if (horario[dia][0].entero && horario[dia][1].entero && horario[dia][2].entero && horario[dia][3].entero && horario[dia][4].entero && horario[dia][5].entero)
                     {
-                        printf("Horario lleno - Ingrese otro dia > ");
+                        printf("Horario lleno - Ingrese otro día > ");
                         j--;
                     }
                     else
                     {
-                        disponibilidad_de_horario(1, i, nombre, apellido);
+                        disponibilidad_de_horario(dia, i, nombre, apellido);
                     }
-                    break;
-                case 2:
-                    if ((horario[2][1].entero && horario[2][2].entero && horario[2][3].entero && horario[2][4].entero && horario[2][5].entero && horario[2][6].entero) == 1)
-                    {
-                        printf("Horario lleno - Ingrese otro dia > ");
-                        j--;
-                    }
-                    else
-                    {
-                        disponibilidad_de_horario(2, i, nombre, apellido);
-                    }
-                    break;
-                case 3:
-                    if ((horario[3][1].entero && horario[3][2].entero && horario[3][3].entero && horario[3][4].entero && horario[3][5].entero && horario[3][6].entero) == 1)
-                    {
-                        printf("Horario lleno - Ingrese otro dia > ");
-                        j--;
-                    }
-                    else
-                    {
-                        disponibilidad_de_horario(3, i, nombre, apellido);
-                    }
-                    break;
-                case 4:
-
-                    if ((horario[4][1].entero && horario[4][2].entero && horario[4][3].entero && horario[4][4].entero && horario[4][5].entero && horario[4][6].entero) == 1)
-                    {
-                        printf("Horario lleno - Ingrese otro dia > ");
-                        j--;
-                    }
-                    else
-                    {
-                        disponibilidad_de_horario(4, i, nombre, apellido);
-                    }
-                    break;
-                case 5:
-
-                    if ((horario[5][1].entero && horario[5][2].entero && horario[5][3].entero && horario[5][4].entero && horario[5][5].entero && horario[5][6].entero) == 1)
-                    {
-                        printf("Horario lleno - Ingrese otro dia > ");
-                        j--;
-                    }
-                    else
-                    {
-                        disponibilidad_de_horario(5, i, nombre, apellido);
-                    }
-                    break;
-                default:
+                }
+                else
+                {
                     printf("\nIntente nuevamente > ");
                     j--;
-                    break;
                 }
             }
             system("cls");
+            printf("DATOS AÑADIDOS SATISFACTORIAMENTE\n");
+            // srand(time(NULL));
         }
-        printf("DATOS A%cADIDOS SATIFACTORIAMENTE\n", NN);
-        // srand(time(NULL));
         fwrite(docentes, sizeof(struct docente), numDocentes, registros_docente);
         fclose(registros_docente);
         menu_est();
@@ -444,57 +353,50 @@ void disponibilidad_de_horario(int diaa, int i, char *nombre, char *apellido)
     {
         do
         {
-            printf("Ingrese hora escogida n%cmero (%d) > ", u, y + 1);
-            if (scanf("%d", &hora) != 1)
+            printf("Ingrese hora escogida número (%d) > ", y + 1);
+            if (scanf("%d", &hora) != 1 || hora < 1 || hora > 6)
             {
-                printf("Error de entrada - Intente nuevamente > ");
+                printf("Error de entrada - Intente nuevamente\n");
                 while (getchar() != '\n')
                     ;
             }
-        } while (0);
-        if (hora >= 1 && hora <= 6)
-        {
-            if (!verificar_hora(diaa, hora, nombre, apellido, horario))
-            {
-                y--;
-            }
-        }
-        else
-        {
-            printf("Error de numero. \n");
-            y--;
-        }
+        } while (hora < 1 || hora > 6 || !verificar_hora(diaa, hora - 1, nombre, apellido, horario));
     }
     return;
 }
-int verificar_hora(int dia, int hora, char *nombre, char *apellido, struct ElementoHorario horario[5][6])
+int verificar_hora(int dia, int hora, const char *nombre, const char *apellido, struct ElementoHorario horario[5][6])
 {
-    FILE *horario_dat = fopen(F_horario_dat, "ab+"); // Cambiar "a+" por "ab+"
-    if (horario_dat)
+    FILE *horario_dat = fopen(F_horario_dat, "rb+");
+    if (horario_dat == NULL)
     {
-        if ((horario[dia][hora].entero == 0))
+        fclose(horario_dat);
+        horario_dat = fopen(F_horario_dat, "wb");
+        if (horario_dat != NULL)
         {
-            horario[dia][hora].entero = 1;
-            strncpy(horario[dia][hora].nombre, nombre, 12);
-            strncpy(horario[dia][hora].apellido, apellido, 3);
-            fseek(horario_dat, 0, SEEK_END); // Mover el puntero al final del archivo
-            horario[0][0].cantidad_de_docentes += 1;
-            fwrite(&horario[dia][hora], sizeof(struct ElementoHorario), 1, horario_dat); // Escribir solo el nuevo elemento
             fclose(horario_dat);
-            return 1;
         }
         else
         {
-            printf("Hora ocupada - Escoja otra hora >> \n");
             fclose(horario_dat);
+            printf("Error al crear el archivo de horario\n");
             return 0;
         }
     }
-    else
+    if (horario[dia][hora].entero != 0)
     {
-        printf("DATOS DE HORARIO NO ENCONTRADO\n");
+        printf("Hora ocupada - Escoja otra hora\n");
+        fclose(horario_dat);
         return 0;
     }
+    strncpy(horario[dia][hora].nombre, nombre, 12);
+    strncpy(horario[dia][hora].apellido, apellido, 3);
+    horario[dia][hora].entero = 1;
+
+    // Guardar el horario en el archivo
+    fseek(horario_dat, 0, SEEK_END);
+    fwrite(&horario[dia][hora], sizeof(struct ElementoHorario), 1, horario_dat);
+    fclose(horario_dat);
+    return 1;
 }
 
 int verificar_numero(char *cadena)
@@ -546,82 +448,54 @@ void horario_mostrar()
             printf("%c\n", d);
         }
     }
-    /// DIA DE SEMANAAA
-    gotoxy(3, 1);
-    printf("HORA");
-    gotoxy(3, 3);
-    printf("7:50 \n%c   A \n%c  8:40", d, d); // 1
-    gotoxy(3, 8);
-    printf("8:45 \n%c   A \n%c  9:35", d, d); // 2
-    gotoxy(3, 13);
-    printf("9:35 \n%c   A \n%c 10:30", d, d); // 3
-    gotoxy(3, 18);
-    printf("11:00 \n%c    A \n%c  11:50", d, d); // 4
-    gotoxy(3, 23);
-    printf("11:55 \n%c    A \n%c  12:40", d, d); // 5
-    gotoxy(3, 28);
-    printf("12:45 \n%c    A \n%c  01:40", d, d); // 6
-    // DIA DE LA SEMANA
-    gotoxy(17, 1);
-    printf("LUNES");
-    gotoxy(36, 1);
-    printf("MARTES");
-    gotoxy(54, 1);
-    printf("MIERCOLES");
-    gotoxy(74, 1);
-    printf("JUEVES");
-    gotoxy(93, 1);
-    printf("VIERNES");
+
+    // HORAS
+    char horas[13][20] = {"HORA", "7:50 ", "8:40", "8:45 ", "9:35", "9:35 ", "10:30", "11:00 ", "11:50", "11:55 ", "12:40", "12:45 ", "01:40"};
+    int pos_y[13] = {1, 3, 5, 8, 10, 13, 15, 18, 20, 23, 25, 28, 30};
+    for (int i = 0; i < 13; i++)
+    {
+        gotoxy(3, pos_y[i]);
+        printf("%s", horas[i]);
+    }
+    // DIAS DE LA SEMANA
+    char dias[5][10] = {"LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES"};
+    int pos_x[5] = {17, 36, 54, 74, 93};
+    for (int i = 0; i < 5; i++)
+    {
+        gotoxy(pos_x[i], 1);
+        printf("%s", dias[i]);
+    }
+    // Para evitar escritura mal debida
+    gotoxy(0, 33);
     return;
 }
-DWORD WINAPI hilos_docentes(LPVOID lpParam)
+
+DWORD WINAPI
+hilos_docentes(LPVOID lpParam)
 {
     char materia[] = "Fundamentos";
     char sede[] = "Villa asia";
     FILE *horario_dat = fopen(F_horario_dat, "rb");
-    if (horario_dat)
+    if (horario_dat != NULL)
     {
-        printf("---------%d---------", horario[0][0].cantidad_de_docentes);
-        fread(horario, sizeof(struct ElementoHorario), horario[0][0].cantidad_de_docentes, horario_dat);
+        int num_docentes_leidos = fread(horario, sizeof(struct ElementoHorario), 30, horario_dat);
         fclose(horario_dat);
-        // x , y , dia, hora, seccion, aula, char *nombre, char *apellido, char *materia, char *sede, struct ElementoHorario horario[5][6]
-        // DIAAAAAAAAAAA LUNESSSSSSSSSS
-        horario_asig(12, 3, 1, 1, 3, 13, horario[1][1].nombre, horario[1][1].apellido, materia, sede);
-        horario_asig(12, 8, 1, 2, 3, 13, horario[1][2].nombre, horario[1][2].apellido, materia, sede);
-        horario_asig(12, 13, 1, 3, 3, 13, horario[1][3].nombre, horario[1][3].apellido, materia, sede);
-        horario_asig(12, 18, 1, 4, 3, 13, horario[1][4].nombre, horario[1][4].apellido, materia, sede);
-        horario_asig(12, 23, 1, 5, 3, 13, horario[1][5].nombre, horario[1][5].apellido, materia, sede);
-        horario_asig(12, 28, 1, 6, 3, 13, horario[1][6].nombre, horario[1][6].apellido, materia, sede);
-        // DIAAAAAAAAAAA MARTESSSSSSSSSSSSSSSS
-        horario_asig(31, 3, 2, 1, 3, 13, horario[2][1].nombre, horario[2][1].apellido, materia, sede);
-        horario_asig(31, 8, 2, 2, 3, 13, horario[2][2].nombre, horario[2][2].apellido, materia, sede);
-        horario_asig(31, 13, 2, 3, 3, 13, horario[2][3].nombre, horario[2][3].apellido, materia, sede);
-        horario_asig(31, 18, 2, 4, 3, 13, horario[2][4].nombre, horario[2][4].apellido, materia, sede);
-        horario_asig(31, 23, 2, 5, 3, 13, horario[2][5].nombre, horario[2][5].apellido, materia, sede);
-        horario_asig(31, 28, 2, 6, 3, 13, horario[2][6].nombre, horario[2][6].apellido, materia, sede);
-        // DIAAAAAAAAAAA MIERCOLESSSSSSSSSSSSSSSSSS
-        horario_asig(50, 3, 3, 1, 3, 13, horario[3][1].nombre, horario[3][1].apellido, materia, sede);
-        horario_asig(50, 8, 3, 2, 3, 13, horario[3][2].nombre, horario[3][2].apellido, materia, sede);
-        horario_asig(50, 13, 3, 3, 3, 13, horario[3][3].nombre, horario[3][3].apellido, materia, sede);
-        horario_asig(50, 18, 3, 4, 3, 13, horario[3][4].nombre, horario[3][4].apellido, materia, sede);
-        horario_asig(50, 23, 3, 5, 3, 13, horario[3][5].nombre, horario[3][5].apellido, materia, sede);
-        horario_asig(50, 28, 3, 6, 3, 13, horario[3][6].nombre, horario[3][6].apellido, materia, sede);
-        // DIAAAAAAAAAAA JUEVESSSSSSSSSSSSSSSS
-        horario_asig(69, 3, 4, 1, 3, 13, horario[4][1].nombre, horario[4][1].apellido, materia, sede);
-        horario_asig(69, 8, 4, 2, 3, 13, horario[4][2].nombre, horario[4][2].apellido, materia, sede);
-        horario_asig(69, 13, 4, 3, 3, 13, horario[4][3].nombre, horario[4][3].apellido, materia, sede);
-        horario_asig(69, 18, 4, 4, 3, 13, horario[4][4].nombre, horario[4][4].apellido, materia, sede);
-        horario_asig(69, 23, 4, 5, 3, 13, horario[4][5].nombre, horario[4][5].apellido, materia, sede);
-        horario_asig(69, 28, 4, 6, 3, 13, horario[4][6].nombre, horario[4][6].apellido, materia, sede);
-        // DIAAAAAAAAAAA VIERNESSSSSSSSSSSSSSSSS
-        horario_asig(88, 3, 5, 1, 3, 13, horario[5][1].nombre, horario[5][1].apellido, materia, sede);
-        horario_asig(88, 8, 5, 2, 3, 13, horario[5][2].nombre, horario[5][2].apellido, materia, sede);
-        horario_asig(88, 13, 5, 3, 3, 13, horario[5][3].nombre, horario[5][3].apellido, materia, sede);
-        horario_asig(88, 18, 5, 4, 3, 13, horario[5][4].nombre, horario[5][4].apellido, materia, sede);
-        horario_asig(88, 23, 5, 5, 3, 13, horario[5][5].nombre, horario[5][5].apellido, materia, sede);
-        horario_asig(88, 28, 5, 6, 3, 13, horario[5][6].nombre, horario[5][6].apellido, materia, sede);
-        // PARA EVITAR ESCRITURA INDEBIDAS
-        gotoxy(0, 33);
+        if (num_docentes_leidos != 30)
+        {
+            printf("Error al leer los datos del horario\n");
+        }
+        int x = 0;
+        int y = 3;
+        for (int dia = 0; dia <= 4; dia++)
+        {
+            for (int hora = 0; hora <= 5; hora++)
+            {
+                horario_asig(12 + x, 3 + y, dia, hora, 3, 13, horario[dia][hora].nombre, horario[dia][hora].apellido, materia, sede);
+                y += 5;
+            }
+            x += 19;
+            y = 3;
+        }
     }
     else
     {
@@ -631,6 +505,7 @@ DWORD WINAPI hilos_docentes(LPVOID lpParam)
     }
     return 0;
 }
+
 int horario_asig(int x, int y, int dia, int hora, int seccion, int aula, char *nombre, char *apellido, char *materia, char *sede)
 {
     if ((horario)[dia][hora].entero == 1)
@@ -668,17 +543,14 @@ void HILOS_HORARIO()
     }
     WaitForSingleObject(threadHandle, INFINITE);
     CloseHandle(threadHandle);
-    printf("Presiona una tecla para continuar ");
-    cursor(0);
-    system("pause>clear");
-    cursor(1);
-    system("cls");
+    precione_una_tecla_para_continuar();
     return;
 }
 // PARTE MENOS IMPORTANTES ARREGLOS GRAFICOS
 void icon()
 {
     HWND hwnd = GetConsoleWindow();
+    system("mode con: cols=80 lines=25");
     // Cargar el icono desde un archivo .ico
     HICON hIcon = (HICON)LoadImage(NULL, "data/icon.ico", IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
     // Establecer el nuevo icono para la ventana

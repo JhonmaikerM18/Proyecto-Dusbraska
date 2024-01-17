@@ -1,0 +1,1 @@
+//Defina un arreglo de 6 posiciones de : char int foat double ,long int
