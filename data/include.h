@@ -20,3 +20,7 @@
 #define mm 197
 
 #define Hora_x_doc 3
+//UBICACIONES DE DATOS DE LOS FICHEROS
+const char* F_registros_doc =  "data/registros_doc";
+const char* F_horario_dat =  "data/horario.dat";
+const char* configuraciones =  "data/config.txt";
