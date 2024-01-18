@@ -2,10 +2,10 @@
 int valido_doc;
 int valido = 0;
 int numDocentes;
-int cantidad_horario;
+int cantidad_de_lectura;
 // Definici�n de la estructura de Docente
 struct advertencia peligro;
-struct ElementoHorario horario[4][5];
+struct ElementoHorario horario[5][6];
 // FUNCIONES PROTOTIPO
 void mostrar_docentes(int numDocentes);
 void random();
@@ -23,12 +23,14 @@ void horario_mostrar();
 DWORD WINAPI hilos_docentes(LPVOID lpParam);
 void HILOS_HORARIO();
 void cursor(int);
-int carga_de_datos_doc(int numDocentes, struct ElementoHorario horario[4][5]);
+int carga_de_datos_doc(int numDocentes, struct ElementoHorario horario[5][6]);
 void pantalla_carga(int x, int y, int xx, int z, int zz, int tiempo, int segundos);
 void centrar_t(char *texto, int x, int y);
 void cuadro(int xs, int ys, int xi, int yi);
 void bloqueo_maximizar();
 void precione_una_tecla_para_continuar();
+int inicializar_configuracion();
+void actualizar_configuracion();
 
 void menu_est()
 {
@@ -38,24 +40,18 @@ void menu_est()
     SetConsoleTitle("HORARIO - MENU DE INICIO");
     system("mode con: cols=80 lines=25");
     bloqueo_maximizar();
-    FILE *config = fopen(configuraciones, "r");
-    if (config == NULL)
+    if ((inicializar_configuracion()) != 0)
     {
-        printf("Limpiando las estructuras...\n");
-        struct ElementoHorario horario[4][5] = {0};
+        // Si el archivo no existe, inicializamos las estructuras y escribimos el valor de cantidad_de_lectura
+        struct ElementoHorario horario[5][6] = {0};
         struct docente docentes[100] = {0};
-        config = fopen(configuraciones, "w");
-        if (config != NULL)
-        {
-            fprintf(config, "Estructuras limpiadas.");
-            fclose(config);
-        }
-        else
-        {
-            printf("Error al crear el archivo de configuración\n");
-        }
+        cantidad_de_lectura = 0;
+        actualizar_configuracion();
     }
-    fclose(config);
+    else
+    {
+        actualizar_configuracion();
+    }
     do
     {
         system("cls");
@@ -147,7 +143,8 @@ void menu_est()
             system("cls");
 
             printf("%cQue registro desea eliminar?\n", signo);
-            printf("1.- DOCENTE              xxx 2.- MATERIA xxx              3.-HORARIO\n>> ");
+            printf("1.- DOCENTE              xxx 2.- MATERIA xxx              3.-HORARIO\n");
+            printf("                             4.- TODO.!                            \n>> ");
             scanf("%d", &opcion);
             system("cls");
             switch (opcion)
@@ -180,6 +177,17 @@ void menu_est()
                     eliminar_fichero(F_horario_dat);
                 }
                 break;
+            case 4:
+                printf("%cESTA SEGURO QUE DESEA ELIMINAR LOS DATOS A%cADIDOS?\n", signo, NN);
+                printf("Ingrese (0) = NO (1) = SI \n>> ");
+                scanf("%d", &opcion);
+                if (opcion == 1)
+                {
+                    eliminar_fichero(F_horario_dat);
+                    eliminar_fichero(configuraciones);
+                    eliminar_fichero(F_registros_doc);
+                }
+                break;
             default:
                 printf("N%cmero introducido incorrecto - Intentelo nuevamente m%cs tarde\n", u, aa);
                 precione_una_tecla_para_continuar();
@@ -189,12 +197,13 @@ void menu_est()
         case 9:
             cursor(0);
             printf("QUE TENGA UN LINDO DIA :) ");
-            Sleep(3000);
+            Sleep(1000);
             return;
             break;
         default:
             break;
         }
+        actualizar_configuracion();
     } while (opcion != 9);
 }
 void eliminar_fichero(const char *fichero)
@@ -215,7 +224,7 @@ void eliminar_fichero(const char *fichero)
     return;
 }
 
-int carga_de_datos_doc(int numDocentes, struct ElementoHorario horario[4][5])
+int carga_de_datos_doc(int numDocentes, struct ElementoHorario horario[5][6])
 {
     int i;
     system("cls");
@@ -267,10 +276,9 @@ int carga_de_datos_doc(int numDocentes, struct ElementoHorario horario[4][5])
             {
                 int dia;
                 scanf("%d", &dia);
-                dia--;
-                if (dia >= 0 && dia <= 4)
+                if (dia >= 1 && dia <= 5)
                 {
-                    if (horario[dia][0].entero && horario[dia][1].entero && horario[dia][2].entero && horario[dia][3].entero && horario[dia][4].entero && horario[dia][5].entero)
+                    if (horario[dia][1].entero && horario[dia][2].entero && horario[dia][3].entero && horario[dia][4].entero && horario[dia][5].entero && horario[dia][6].entero)
                     {
                         printf("Horario lleno - Ingrese otro día > ");
                         j--;
@@ -282,7 +290,7 @@ int carga_de_datos_doc(int numDocentes, struct ElementoHorario horario[4][5])
                 }
                 else
                 {
-                    printf("\nIntente nuevamente > ");
+                    printf("\nIntente nuevamente (1-5) >> ");
                     j--;
                 }
             }
@@ -360,42 +368,35 @@ void disponibilidad_de_horario(int diaa, int i, char *nombre, char *apellido)
                 while (getchar() != '\n')
                     ;
             }
-        } while (hora < 1 || hora > 6 || !verificar_hora(diaa, hora - 1, nombre, apellido, horario));
+        } while (hora < 1 || hora > 6 || !verificar_hora(diaa, hora, nombre, apellido, horario));
     }
     return;
 }
 int verificar_hora(int dia, int hora, const char *nombre, const char *apellido, struct ElementoHorario horario[5][6])
 {
-    FILE *horario_dat = fopen(F_horario_dat, "rb+");
+    inicializar_configuracion();
+    FILE *horario_dat = fopen(F_horario_dat, "ab+");
     if (horario_dat == NULL)
     {
-        fclose(horario_dat);
-        horario_dat = fopen(F_horario_dat, "wb");
-        if (horario_dat != NULL)
+        FILE *horario_dat = fopen(F_horario_dat, "wb");
+    }
+    else
+    {
+        if (horario[dia][hora].entero != 0)
         {
+            printf("Hora ocupada - Escoja otra hora\n");
             fclose(horario_dat);
-        }
-        else
-        {
-            fclose(horario_dat);
-            printf("Error al crear el archivo de horario\n");
             return 0;
         }
-    }
-    if (horario[dia][hora].entero != 0)
-    {
-        printf("Hora ocupada - Escoja otra hora\n");
+        strncpy(horario[dia][hora].nombre, nombre, 12);
+        strncpy(horario[dia][hora].apellido, apellido, 3);
+        horario[dia][hora].entero = 1;
+        cantidad_de_lectura += 1;
+        // Guardar el horario en el archivo
+        fseek(horario_dat, 0, SEEK_END);
+        fwrite(&horario[dia][hora], sizeof(struct ElementoHorario), 1, horario_dat);
         fclose(horario_dat);
-        return 0;
     }
-    strncpy(horario[dia][hora].nombre, nombre, 12);
-    strncpy(horario[dia][hora].apellido, apellido, 3);
-    horario[dia][hora].entero = 1;
-
-    // Guardar el horario en el archivo
-    fseek(horario_dat, 0, SEEK_END);
-    fwrite(&horario[dia][hora], sizeof(struct ElementoHorario), 1, horario_dat);
-    fclose(horario_dat);
     return 1;
 }
 
@@ -450,9 +451,9 @@ void horario_mostrar()
     }
 
     // HORAS
-    char horas[13][20] = {"HORA", "7:50 ", "8:40", "8:45 ", "9:35", "9:35 ", "10:30", "11:00 ", "11:50", "11:55 ", "12:40", "12:45 ", "01:40"};
-    int pos_y[13] = {1, 3, 5, 8, 10, 13, 15, 18, 20, 23, 25, 28, 30};
-    for (int i = 0; i < 13; i++)
+    char horas[19][20] = {"HORA", "7:50 ", "8:40", "8:45 ", "9:35", "9:35 ", "10:30", "11:00 ", "11:50", "11:55 ", "12:40", "12:45 ", "01:40", " A", " A", " A", "  A", "  A", "  A"};
+    int pos_y[19] = {1, 3, 5, 8, 10, 13, 15, 18, 20, 23, 25, 28, 30, 4, 9, 14, 19, 24, 29};
+    for (int i = 0; i < 19; i++)
     {
         gotoxy(3, pos_y[i]);
         printf("%s", horas[i]);
@@ -470,37 +471,48 @@ void horario_mostrar()
     return;
 }
 
-DWORD WINAPI
-hilos_docentes(LPVOID lpParam)
+DWORD WINAPI hilos_docentes(LPVOID lpParam)
 {
+    int cantidad_de_lectura;
+    FILE *config = fopen(configuraciones, "r");
+    if (config != NULL)
+    {
+        fscanf(config, "%d", &cantidad_de_lectura);
+        fclose(config);
+    }
+    else
+    {
+        printf("Error al crear el archivo de configuración\n");
+    }
     char materia[] = "Fundamentos";
     char sede[] = "Villa asia";
     FILE *horario_dat = fopen(F_horario_dat, "rb");
     if (horario_dat != NULL)
     {
-        int num_docentes_leidos = fread(horario, sizeof(struct ElementoHorario), 30, horario_dat);
+        int num_docentes_leidos = fread(horario, sizeof(struct ElementoHorario), cantidad_de_lectura, horario_dat);
         fclose(horario_dat);
-        if (num_docentes_leidos != 30)
+        if (cantidad_de_lectura == num_docentes_leidos)
         {
-            printf("Error al leer los datos del horario\n");
-        }
-        int x = 0;
-        int y = 3;
-        for (int dia = 0; dia <= 4; dia++)
-        {
-            for (int hora = 0; hora <= 5; hora++)
+            int x = 0, y = 3;
+            for (int dia = 1; dia < 6; dia++)
             {
-                horario_asig(12 + x, 3 + y, dia, hora, 3, 13, horario[dia][hora].nombre, horario[dia][hora].apellido, materia, sede);
-                y += 5;
+                for (int hora = 1; hora < 7; hora++)
+                {
+                    horario_asig(12 + x, y, dia, hora, 3, 13, horario[dia][hora].nombre, horario[dia][hora].apellido, materia, sede);
+                    y += 5;
+                }
+                x += 19;
+                y = 3;
             }
-            x += 19;
-            y = 3;
         }
+        gotoxy(0, 33);
+        precione_una_tecla_para_continuar();
     }
     else
     {
         system("cls");
         printf("DATOS DE HORARIO NO A%cADIDOS\n", NN);
+        precione_una_tecla_para_continuar();
         return 0;
     }
     return 0;
@@ -508,12 +520,26 @@ hilos_docentes(LPVOID lpParam)
 
 int horario_asig(int x, int y, int dia, int hora, int seccion, int aula, char *nombre, char *apellido, char *materia, char *sede)
 {
+    if ((inicializar_configuracion()) == 0)
+    {
+        FILE *horario_dat = fopen(F_horario_dat, "rb");
+        if (horario_dat != NULL)
+        {
+            fread(horario, sizeof(struct ElementoHorario), cantidad_de_lectura, horario_dat);
+            fclose(horario_dat);
+        }
+    }
+    else
+    {
+        printf("Error al crear el archivo de configuración\n");
+        return 0;
+    }
     if ((horario)[dia][hora].entero == 1)
     {
         gotoxy(x, y);
-        printf("%s", nombre);
+        printf("%s", horario[dia][hora].nombre);
         gotoxy(x + 12, y);
-        printf(" %s.", apellido);
+        printf(" %s.", horario[dia][hora].apellido);
         gotoxy(x, y + 1);
         printf("%s", materia);
         gotoxy(x, y + 2);
@@ -543,7 +569,6 @@ void HILOS_HORARIO()
     }
     WaitForSingleObject(threadHandle, INFINITE);
     CloseHandle(threadHandle);
-    precione_una_tecla_para_continuar();
     return;
 }
 // PARTE MENOS IMPORTANTES ARREGLOS GRAFICOS
@@ -769,4 +794,27 @@ void precione_una_tecla_para_continuar()
     system("pause>clear");
     system("cls");
     cursor(1);
+}
+int inicializar_configuracion()
+{
+    FILE *config = fopen(configuraciones, "r");
+    if (config == NULL)
+    {
+        printf("Error al abrir el archivo de configuración\n");
+        return 1;
+    }
+    fscanf(config, "%d", &cantidad_de_lectura);
+    fclose(config);
+    return 0;
+}
+void actualizar_configuracion()
+{
+    FILE *config = fopen(configuraciones, "w");
+    if (config == NULL)
+    {
+        printf("Error al abrir el archivo de configuración\n");
+        exit(1);
+    }
+    fprintf(config, "%d", cantidad_de_lectura);
+    fclose(config);
 }

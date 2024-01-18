@@ -39,6 +39,5 @@ struct advertencia
 
 //UBICACIONES DE DATOS DE LOS FICHEROS
 const char* F_registros_doc =  "data/registros_doc";
-const char* F_horario_dat =  "data/horario.dat";
+const char* F_horario_dat =  "data/horario.txt";
 const char* configuraciones =  "data/config.txt";
-#define F_cantidad_docentes "data/cantidad_docentes.dat"
