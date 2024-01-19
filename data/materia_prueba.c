@@ -5,9 +5,8 @@ int mostrar_materias_definidas();
 void asignar_materia_doc();
 void llenar_materia(struct materia m);
 void cargarMaterias(struct libre_materia l_materias[]);
-struct libre_materia l_materias[30];
-struct asignacion asignando[50];
-int numMaterias;
+
+
 int main()
 {
     asignar_materia_doc();
@@ -206,123 +205,4 @@ void imprimirEstructura(struct materia m, int y)
     printf("%d", m.prelacion);
     gotoxy(103, y);
     printf("%d", m.horas);
-}
-
-void cargarMaterias(struct libre_materia l_materias[])
-{
-    printf("\nIngrese el numero de materias a cargar: ");
-    scanf("%d", &numMaterias);
-    peligro.materia = 1;
-    FILE *libre_materia = fopen("reg_libre_materias.txt", "w");
-    if (libre_materia)
-    {
-        for (int i = 0; i < numMaterias; i++)
-        {
-            system("cls");
-            printf("\nIngrese los datos de la materia %d:\n", i + 1);
-            printf("Nombre: ");
-            scanf("%s", l_materias[i].nombre);
-            printf("Unidades de credito: ");
-            scanf("%d", &l_materias[i].unidades);
-            printf("Cupos: ");
-            scanf("%d", &l_materias[i].cupos);
-            printf("Prelacion: ");
-            scanf("%d", &l_materias[i].prelacion);
-            printf("Sede -> VILLA ASIA = 1 O ATLANTICO = 2 \n Opci%cn>> ", o);
-            scanf("%s", l_materias[i].seccion);
-
-            if (l_materias[i].seccion == 1)
-            {
-                strcpy(l_materias[i].sede, "VILLA ASIA");
-            }
-            else if (l_materias[i].seccion == 2)
-            {
-                strcpy(l_materias[i].sede, "ATLANTICO");
-            }
-            printf("Seccion: ");
-            scanf("%d", &l_materias[i].seccion);
-            printf("Semestre: ");
-            scanf("%d", &l_materias[i].semestre);
-            l_materias[i].alumnos_inscritos = rand() % 15 + 20;
-        }
-    }
-
-    fwrite(l_materias, sizeof(struct libre_materia), numMaterias, libre_materia);
-    fclose(libre_materia);
-}
-
-void asignar_materia_doc(struct docente docentes[])
-{
-    int opcion1, opcion2;
-    system("mode con: cols=100 lines=50");
-    centrar_t("DOCENTES DISPONIBLES EN SISTEMA", 50, 0);
-    if (cantidad_doc != 0 || numMaterias != 0)
-    {
-        if (cantidad_doc > 0)
-        {
-            int i = 10, j = 4, w = 3, l = 12, z;
-            for (int x = 0; x < cantidad_doc; x++)
-            {
-                gotoxy(i, j);
-                printf("%d.- %s", x, docentes[x].nombre);
-                j += 2;
-                if (x == w)
-                {
-                    i += 20, j -= 6, w += 3;
-                    if (x == l)
-                    {
-                        for (z = 4; z < 96; z++)
-                        {
-                            gotoxy(z, j + 6);
-                            printf("%c", 196);
-                        }
-                        i = 10, j += 8, l += 12;
-                    }
-                }
-            }
-            gotoxy(0, 2);
-            printf("Escoga un docente para asignarle una materia >> ");
-            scanf("%d", &opcion1);
-            system("cls");
-        }
-        if (numMaterias > 0)
-        {
-            centrar_t("MATERIAS DISPONIBLES EN SISTEMA", 50, 0);
-            int i = 10, j = 4, w = 3, l = 12, z;
-            for (int x = 0; x < numMaterias; x++)
-            {
-                gotoxy(i, j);
-                printf("%d.- %s", x, l_materias[x].nombre);
-                j += 2;
-                if (x == w)
-                {
-                    i += 20, j -= 6, w += 3;
-                    if (x == l)
-                    {
-                        for (z = 4; z < 96; z++)
-                        {
-                            gotoxy(z, j + 6);
-                            printf("%c", 196);
-                        }
-                        i = 10, j += 8, l += 12;
-                    }
-                }
-            }
-            gotoxy(0, 2);
-            printf("%cQue Materia le va a asignar al docente? >> ", signo);
-            scanf("%d", &opcion2);
-            strcpy(asignando[1].nombre_doc, docentes[opcion1].nombre);
-            strcpy(asignando[1].nombre_mat, l_materias[opcion2].nombre);
-        }
-        else
-        {
-            gotoxy(0, 2);
-            printf("No hay materias inscritas :v ");
-        }
-    }
-    else
-    {
-        gotoxy(0, 2);
-        printf("NO HAY DATOS INCRITOS DE DOCENTES NI MATERIAS");
-    }
 }
