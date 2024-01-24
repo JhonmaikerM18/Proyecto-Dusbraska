@@ -179,19 +179,13 @@ void menu_est()
             break;
         case 8:
             system("cls");
-            printf("%cESTA SEGURO QUE DESEA ELIMINAR LOS DATOS A%cADIDOS?\n", signo, NN);
-            printf("Ingrese (0) = NO (1) = SI \n>> ");
-            scanf("%d", &opcion);
-            if (opcion == 1)
-            {
-                remove(F_horario_dat);
-                remove(configuraciones);
-                remove(F_registros_doc);
-                remove(F_materia);
-                remove(pause);
-                printf("Los Archivos de datos fue eliminado satifactoriamente\n");
-                precione_una_tecla_para_continuar();
-            }
+            remove(F_horario_dat);
+            remove(configuraciones);
+            remove(F_registros_doc);
+            remove(F_materia);
+            remove(pause);
+            printf("Los Archivos de datos fue eliminado satifactoriamente\n");
+            precione_una_tecla_para_continuar();
             break;
         case 9:
             cursor(0);
@@ -639,7 +633,6 @@ int inicializar_configuracion()
     fread(&numDocentes, sizeof(int), 1, config);
     fread(&numMaterias, sizeof(int), 1, config);
     fread(&numAsignaciones, sizeof(int), 1, config);
-    fread(&colores_asignados, sizeof(int), 1, config);
     fclose(config);
     return 0;
 }
@@ -656,7 +649,6 @@ int actualizar_configuracion()
     fwrite(&numDocentes, sizeof(int), 1, config);
     fwrite(&numMaterias, sizeof(int), 1, config);
     fwrite(&numAsignaciones, sizeof(int), 1, config);
-    fwrite(&colores_asignados, sizeof(int), 1, config);
     fclose(config);
     return 0;
 }
@@ -672,7 +664,7 @@ void random(int *k, int i, int x)
 void asignar_color_materia(const char *materia)
 {
     int color = 0;
-    for (int i = 1; i < 15; i++)
+    for (int i = 0; i < 15; i++)
     {
         if (strcmp(materias[i].nombre, materia) == 0)
         {
@@ -704,7 +696,7 @@ int obtener_color_unico()
 
 int color_repetido(int color)
 {
-    for (int i = 0; i < 16; i++)
+    for (int i = 1; i < 15; i++)
     {
         if (colores_asignados[i] == color)
         {
