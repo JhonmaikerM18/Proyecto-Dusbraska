@@ -31,14 +31,13 @@ struct docente
 };
 struct ElementoHorario
 {
-    char nombre[12], materia[30];
-    char apellido[12];
+    char nombre[12], apellido[12], materia[30], sede[20];
     int entero;
 };
 struct materia
 {
-    char nombre[60], sede[12], nombre_doc[6][30], apellido_doc[6][30];
-    int unidades, codigo, cupos, prelacion, secciones, pertenece, horas, semestre, alumnos_inscritos, docentes[6], n_materia;
+    char nombre[30], sede[12], nombre_doc[6][30], apellido_doc[6][30], unidades[5], codigo[7], cupos[2], prelacion[7], pertenece[1], horas[1], semestre[1];
+    int docentes[6], n_materia, alumnos_inscritos[5], secciones, color[20];
 };
 
 // Estructurassss
@@ -47,27 +46,25 @@ struct ElementoHorario horario[5][6];
 struct docente docentes[100];
 
 // VARIABLES GLOBALES
-int opcion, numDocentes, horas_anadidas, numMaterias, numAsignaciones, temporal;
-char nombre[13], apellido[5];
+int opcion, numDocentes, horas_anadidas, numMaterias, numAsignaciones, temporal, colores_asignados[16];
 
 // Definici�n de la estructura de Docente
 
 // FUNCIONES PRINCIPALES
-
 void menu_est();
 int carga_de_docentes();
 void cargar_de_materia();
 void asignar_materia_doc();
 void mostrar_asignaciones();
+void mostrar_docentes();
 void mostrar_datos_completos_docentes();
 void mostrar_datos_completos_materias();
 // FUNCIONES PRINCIPALES ->>> PARTE DEL HORARIO ES ESTA
-int horario_asig(int, int, int, int, int, int, char *);
-DWORD WINAPI hilos_docentes(LPVOID lpParam);
+void horario_asig(int, int, int, int, int, int);
+void hilos_docentes();
 void disponibilidad_de_horario(int, int);
-void HILOS_HORARIO();
 void horario_mostrar();
-int verificar_hora(int dia, int hora, int i, const char *nombre, const char *apellido);
+int verificar_hora(int, int, int, const char *, const char *, const char *, const char *);
 // ACTUALIZAR FICHEROS
 int actualizar_configuracion();
 int actualizar_horario();
@@ -89,14 +86,19 @@ void docente_mostrar_cuadro();
 void materia_mostrar_cuadro();
 void icon();
 void gotoxy(int, int);
-void pantalla_carga(int x, int y, int z, int zz, int tiempo, int segundos);
+void pantalla_carga(int, int, int, int, int, int);
 void precione_una_tecla_para_continuar();
 // FUNCIONES DE COMPARACION
 int comparar_cedula(const void *a, const void *b);
 int comparar_unidades_credito(const void *a, const void *b);
 int verificacion_de_realidad(char *numero, int x);
+int SoloNumeros(char *cadena);
+int SoloLetras(char *cadena);
 // VARIADASSS
 void random();
+void asignar_color_materia(const char *materia);
+int obtener_color_unico();
+int color_repetido(int color);
 void imprimir_Docentes(struct docente *docentes, int i, int y);
 void imprimir_Materias(struct materia *materias, int i, int y);
 
@@ -105,7 +107,7 @@ int main()
     icon();
     cuadro(30, 5, 50, 9);
     centrar_t("BIENVENIDO", 40, 7);
-    // pantalla_carga(40, 20, 6, 71, 1, 700);
+    pantalla_carga(40, 20, 6, 71, 1, 700);
     menu_est();
     return 0;
 }
@@ -127,11 +129,12 @@ void menu_est()
         centrar_t("BIENVENIDO(A)\n\n", 40, 0);
         printf("1.- CARGAR DATOS DE LOS DOCENTES\n");
         printf("2.- CARGAR DATOS DE LAS MATERIAS\n");
-        printf("3.- MOSTRAR HORARIO\n");
-        printf("4.- MOSTRAR DATOS DE LOS DOCENTES \n");
-        printf("5.- MOSTRAR MATERIAS\n");
-        printf("6.- MOSTRAR DOCENTES CON SU MATERIA ASIGNADA\n");
-        printf("7.- MOSTRAR LA RELACION DE DOCENTES CON ESTUDIANTES INSCRITOS\n");
+        printf("3.- ASIGNARLE DOCENTE UNA MATERIA\n");
+        printf("4.- MOSTRAR HORARIO\n");
+        printf("5.- MOSTRAR DATOS DE LOS DOCENTES \n");
+        printf("6.- MOSTRAR MATERIAS\n");
+        printf("7.- MOSTRAR DOCENTES CON SU MATERIA ASIGNADA\n");
+        // printf("8.- MOSTRAR LA RELACION DE DOCENTES CON ESTUDIANTES INSCRITOS\n");
         printf("8.- ELIMINAR DATOS\n");
         printf("9.- SALIR DEL PROGRAMA\n\n");
         printf("INGRESE OPCION A ESCOGER >>");
@@ -159,26 +162,20 @@ void menu_est()
             cargar_de_materia();
             break;
         case 3:
-            HILOS_HORARIO();
+            asignar_materia_doc();
             break;
         case 4:
-            mostrar_datos_completos_docentes();
+            hilos_docentes();
+            // HILOS_HORARIO();
             break;
         case 5:
-            mostrar_datos_completos_materias();
+            mostrar_datos_completos_docentes();
             break;
         case 6:
-            printf("Para asignar a un docente (1) / Para ver los docentes asignados a materia (2)\n>> ");
-            scanf("%d", &opcion);
-            if (opcion == 1)
-            {
-                asignar_materia_doc();
-            }
-            else if (opcion == 2)
-            {
-                mostrar_asignaciones();
-            }
-
+            mostrar_datos_completos_materias();
+            break;
+        case 7:
+            mostrar_asignaciones();
             break;
         case 8:
             system("cls");
@@ -268,67 +265,67 @@ int carga_de_docentes()
             printf("Error - Ingrese un n%cmero de tel%cfono correcto >> ", u, e);
             scanf("%s", docentes[i].telefono_d);
         }
-        random(docentes[i].insc_doc, i, 3);
-
-        printf("\nLunes = 1  /  Martes  = 2  /  Mi%crcoles = 3 / Jueves = 4  /  Viernes = 5\n", e);
-        printf("Ingrese el d%ca disponible del docente >> ", ai);
-        strncpy(nombre, docentes[i].nombre, 12);
-        strncpy(apellido, docentes[i].apellido, 4);
-        for (int j = 0; j < 1; j++)
-        {
-            int dia;
-            scanf("%d", &dia);
-            docentes[i].disp_doc = dia;
-            inicializar_horario();
-            dia--;
-            if (dia >= 0 && dia <= 4)
-            {
-                if (horario[dia][1].entero && horario[dia][2].entero && horario[dia][3].entero && horario[dia][4].entero && horario[dia][5].entero && horario[dia][6].entero)
-                {
-                    printf("Horario lleno - Ingrese otro d%ca >> ", ai);
-                    j--;
-                }
-                else
-                {
-                    disponibilidad_de_horario(dia, i);
-                }
-            }
-            else
-            {
-                printf("\nIntente nuevamente (1-5) >> ");
-                j--;
-            }
-        }
         system("cls");
+        numDocentes++;
+        actualizar_configuracion();
     }
     printf("DATOS A%cADIDOS SATISFACTORIAMENTE\n", NN);
-    numDocentes++;
-    actualizar_configuracion();
+
     actualizar_docentes();
     precione_una_tecla_para_continuar();
     return 0;
 }
 
-void disponibilidad_de_horario(int diaa, int i)
+void disponibilidad_de_horario(int i, int x)
 {
-    struct docente docentes[numDocentes];
-    int hora;
+    int dia, hora;
+    char nombre[13], apellido[5], materia[30], sede[30];
+    inicializar_todo();
+    system("cls");
+    printf("Ingrese el d%ca disponible del docente >> ", ai);
+    printf("\nLunes = 1  /  Martes  = 2  /  Mi%crcoles = 3 / Jueves = 4  /  Viernes = 5\n>> ", e);
+    strncpy(nombre, docentes[i].nombre, 12);
+    strncpy(apellido, docentes[i].apellido, 4);
+    strcpy(materia, materias[x].nombre);
+    strcpy(sede, materias[x].sede);
+    for (int j = 0; j < 1; j++)
+    {
+        scanf("%d", &dia);
+        docentes[i].disp_doc = dia;
+        inicializar_horario();
+        dia--;
+        if (dia >= 0 && dia <= 4)
+        {
+            if (horario[dia][1].entero && horario[dia][2].entero && horario[dia][3].entero && horario[dia][4].entero && horario[dia][5].entero && horario[dia][6].entero)
+            {
+                printf("Horario lleno - Ingrese otro d%ca >> ", ai);
+                j--;
+            }
+            // Hace el pase aca de autorizacion
+        }
+        else
+        {
+            printf("\nIntente nuevamente (1-5) >> ");
+            j--;
+        }
+    }
     system("cls");
     printf("    Ingrese el horario disponible del docente \n");
     printf("           El docente tiene 3 horas ");
-    gotoxy(4, 3);
-    printf("      HORA      %c    NûMERO  \n", 179);
+    gotoxy(1, 3);
+    printf("         HORA      %c    N%cMERO  \n", 179, 154);
     printf("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", 179, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, 197, s, s, s, s, s, s, s, s, s, s, s, s, s, s, 179);
     printf("                    %c           \n", 179);
     printf("      7:50 A 8:40   %c    (1)    \n", 179);
     printf("      8:45 A 9:35   %c    (2)    \n", 179);
     printf("      9:35 A 10:30  %c    (3)    \n", 179);
+    printf("      X DESCANSO X  %c           \n", 179);
     printf("     11:00 A 11:50  %c    (4)    \n", 179);
     printf("     11:55 A 12:40  %c    (5)    \n", 179);
     printf("     12:45 A 01:40  %c    (6)    \n", 179);
     printf("                    %c           \n", 179);
-    cuadro(3, 2, 34, 13);
-    gotoxy(0, 15);
+    cuadro(3, 2, 34, 14);
+    gotoxy(0, 16);
     for (int y = 0; y < Hora_x_doc; y++)
     {
         do
@@ -340,12 +337,11 @@ void disponibilidad_de_horario(int diaa, int i)
                 while (getchar() != '\n')
                     ;
             }
-        } while (hora < 1 || hora > 6 || verificar_hora(diaa, hora - 1, i, nombre, apellido));
+        } while (hora < 1 || hora > 6 || verificar_hora(dia, hora - 1, i, nombre, apellido, materia, sede));
     }
-
     return;
 }
-int verificar_hora(int dia, int hora, int i, const char *nombre, const char *apellido)
+int verificar_hora(int dia, int hora, int i, const char *nombre, const char *apellido, const char *materia, const char *sede)
 {
     inicializar_horario();
     if (horario[dia][hora].entero != 0)
@@ -357,6 +353,9 @@ int verificar_hora(int dia, int hora, int i, const char *nombre, const char *ape
     {
         strncpy(horario[dia][hora].nombre, nombre, 11);
         strncpy(horario[dia][hora].apellido, apellido, 3);
+        strncpy(horario[dia][hora].materia, materia, 26);
+        strcpy(horario[dia][hora].sede, sede);
+
         horario[dia][hora].entero = 1;
         horas_anadidas += 1;
         // Guardar el horario en el archivo
@@ -365,17 +364,18 @@ int verificar_hora(int dia, int hora, int i, const char *nombre, const char *ape
         return 0;
     }
 }
-
-DWORD WINAPI hilos_docentes(LPVOID lpParam)
+void hilos_docentes()
 {
-    char sede[] = "Villa Asia";
+    SetConsoleTitle("HORARIO - MOSTRANDO HORARIO DE CLASE");
+    system("mode con: cols=120 lines=37");
+    horario_mostrar();
     int x = 0, y = 3;
     for (int dia = 0; dia < 5; dia++)
     {
         for (int hora = 0; hora < 6; hora++)
         {
             // SE ESTA ABRIENDO UN TOTAL DE 30 VECES EN MENOS DE 1 MILISEGUNDO XD
-            horario_asig(12 + x, y, dia, hora, 3, 13, sede);
+            horario_asig(12 + x, y, dia, hora, 3, 13);
             y += 5;
         }
         x += 19;
@@ -383,15 +383,16 @@ DWORD WINAPI hilos_docentes(LPVOID lpParam)
     }
     gotoxy(0, 33);
     precione_una_tecla_para_continuar();
-
-    return 0;
+    return;
 }
 
-int horario_asig(int x, int y, int dia, int hora, int secciones, int aula, char *sede)
+void horario_asig(int x, int y, int dia, int hora, int secciones, int aula)
 {
     inicializar_horario();
     if (horario[dia][hora].entero == 1)
     {
+        asignar_color_materia(horario[dia][hora].materia); // Llamar a la función para asignar un color único a la materia
+
         gotoxy(x, y);
         printf("%s %s.", horario[dia][hora].nombre, horario[dia][hora].apellido);
         gotoxy(x, y + 1);
@@ -399,7 +400,10 @@ int horario_asig(int x, int y, int dia, int hora, int secciones, int aula, char 
         gotoxy(x, y + 2);
         printf("Secc %d - Au %d", secciones, aula);
         gotoxy(x, y + 3);
-        printf("%s", sede);
+        printf("%s", horario[dia][hora].sede);
+
+        // Restaurar el color predeterminado
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
     }
     else
     {
@@ -408,25 +412,9 @@ int horario_asig(int x, int y, int dia, int hora, int secciones, int aula, char 
         gotoxy(x, y + 2);
         printf("  NO ASIGNADO");
     }
-
-    return 0;
-}
-void HILOS_HORARIO()
-{
-    SetConsoleTitle("HORARIO - MOSTRANDO HORARIO DE CLASE");
-    horario_mostrar();
-    HANDLE threadHandle;
-    DWORD threadId;
-    threadHandle = CreateThread(NULL, 0, hilos_docentes, NULL, 0, &threadId);
-    if (threadHandle == NULL)
-    {
-        printf("Error al crear el hilo\n");
-        return;
-    }
-    WaitForSingleObject(threadHandle, INFINITE);
-    CloseHandle(threadHandle);
     return;
 }
+
 // PARTE MENOS IMPORTANTES ARREGLOS GRAFICOS
 void icon()
 {
@@ -640,6 +628,7 @@ int inicializar_configuracion()
         struct ElementoHorario horario[5][6] = {0};
         struct docente docentes[100] = {0};
         struct materia materias[30] = {0};
+        int colores_asignados[16] = {0};
         horas_anadidas = 0;
         numDocentes = 0;
         numMaterias = 0;
@@ -650,6 +639,7 @@ int inicializar_configuracion()
     fread(&numDocentes, sizeof(int), 1, config);
     fread(&numMaterias, sizeof(int), 1, config);
     fread(&numAsignaciones, sizeof(int), 1, config);
+    fread(&colores_asignados, sizeof(int), 1, config);
     fclose(config);
     return 0;
 }
@@ -666,6 +656,7 @@ int actualizar_configuracion()
     fwrite(&numDocentes, sizeof(int), 1, config);
     fwrite(&numMaterias, sizeof(int), 1, config);
     fwrite(&numAsignaciones, sizeof(int), 1, config);
+    fwrite(&colores_asignados, sizeof(int), 1, config);
     fclose(config);
     return 0;
 }
@@ -677,6 +668,50 @@ void random(int *k, int i, int x)
         docentes[i].insc_doc[j] = k[j];
         srand(time(NULL));
     }
+}
+void asignar_color_materia(const char *materia)
+{
+    int color = 0;
+    for (int i = 1; i < 15; i++)
+    {
+        if (strcmp(materias[i].nombre, materia) == 0)
+        {
+            if (colores_asignados[i] == 0)
+            {
+                color = obtener_color_unico();
+                colores_asignados[i] = color;
+            }
+            else
+            {
+                color = colores_asignados[i];
+            }
+            break;
+        }
+    }
+    // Usar el color asignado para la materia
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+int obtener_color_unico()
+{
+    int color = 0;
+    do
+    {
+        color = (rand() % 15) + 1; // Generar un número de color aleatorio entre 1 y 15
+    } while (color_repetido(color));
+    return color;
+}
+
+int color_repetido(int color)
+{
+    for (int i = 0; i < 16; i++)
+    {
+        if (colores_asignados[i] == color)
+        {
+            return 1; // Color repetido
+        }
+    }
+    return 0; // Color único
 }
 void horario_mostrar()
 {
@@ -720,15 +755,21 @@ void horario_mostrar()
         gotoxy(pos_x[i], 1);
         printf("%s", dias[i]);
     }
+
+    gotoxy(106, 0);
+    printf("%c", 191);
+    gotoxy(0, 32);
+    printf("%c", 192);
+    gotoxy(106, 32);
+    printf("%c", 217);
+
     // Para evitar escritura mal debida
     gotoxy(0, 33);
     return;
 }
-
-void asignar_materia_doc()
+void mostrar_docentes()
 {
     inicializar_todo();
-    int opcion1, opcion2;
     system("mode con: cols=100 lines=50");
     centrar_t("DOCENTES DISPONIBLES EN SISTEMA", 50, 0);
 
@@ -752,12 +793,20 @@ void asignar_materia_doc()
         }
     }
     gotoxy(0, 20);
-    printf("Escoga un docente para asignarle una materia >> ");
+}
+
+void asignar_materia_doc()
+{
+    mostrar_docentes();
+    int opcion1, opcion2;
+    char materia[30];
+    if (numDocentes == 0)
+    {
+        return;
+    }
+    printf("Escoja un docente para asignarle una materia >> ");
     scanf("%d", &opcion1);
-    opcion1--;
-
     system("cls");
-
     centrar_t("MATERIAS DISPONIBLES EN SISTEMA", 50, 0);
 
     if (numMaterias > 0)
@@ -777,6 +826,7 @@ void asignar_materia_doc()
         gotoxy(0, 20);
         printf("%cQu%c materia le va a asignar al docente? >> ", signo, e);
         scanf("%d", &opcion2);
+        opcion1--;
         opcion2--;
         for (int i = 0; i < 6; i++)
         {
@@ -785,9 +835,12 @@ void asignar_materia_doc()
                 materias[opcion2].docentes[i] = i + 1;
                 strcpy(materias[opcion2].apellido_doc[i], docentes[opcion1].apellido);
                 strcpy(materias[opcion2].nombre_doc[i], docentes[opcion1].nombre);
+                strcpy(docentes[opcion1].materia, materias[opcion2].nombre);
+                strcpy(materia, docentes[opcion1].materia);
                 break;
             }
         }
+        disponibilidad_de_horario(opcion1, opcion2);
         // strcpy(asignaciones[numAsignaciones].nombre_mat, materias[opcion2].nombre);
         numAsignaciones++;
         actualizar_configuracion();
@@ -814,6 +867,7 @@ void cargar_de_materia()
         temporal = (numMaterias + opcion);
         for (int i = numMaterias; i < temporal; i++)
         {
+            char nombre[30] = " ";
             system("cls");
             printf("                 Ingrese los datos de la materia (%d)\n\n", i + 1);
             materias[i].n_materia = numMaterias;
@@ -821,21 +875,43 @@ void cargar_de_materia()
             scanf("%s", materias[i].nombre);
             fflush(stdin);
             printf("Unidades de credito >> ");
-            scanf("%d", &materias[i].unidades);
+            scanf("%s", materias[i].unidades);
             fflush(stdin);
+            while ((SoloNumeros(materias[i].unidades)) == 1)
+            {
+                scanf("%s", materias[i].unidades);
+            }
             printf("C%cdigo >> ", o);
-            scanf("%d", &materias[i].codigo);
+            scanf("%s", materias[i].codigo);
+            fflush(stdin);
+            while ((SoloNumeros(materias[i].codigo)) == 1)
+            {
+                scanf("%s", materias[i].codigo);
+            }
             fflush(stdin);
             printf("Horas >> ");
-            scanf("%d", &materias[i].horas);
+            scanf("%s", materias[i].horas);
+            fflush(stdin);
+            while ((SoloNumeros(materias[i].horas)) == 1)
+            {
+                scanf("%s", materias[i].horas);
+            }
             fflush(stdin);
             printf("Cupos >> ");
-            scanf("%d", &materias[i].cupos);
+            scanf("%s", materias[i].cupos);
             fflush(stdin);
+            while ((SoloNumeros(materias[i].cupos)) == 1)
+            {
+                scanf("%s", materias[i].cupos);
+            }
             printf("Prelaci%cn >> ", o);
-            scanf("%d", &materias[i].prelacion);
+            scanf("%s", materias[i].prelacion);
             fflush(stdin);
-            printf("\nSedes VILLA ASIA = 1 o ATLANTICO = 2 \nOpci%cn >> ", o);
+            while ((SoloNumeros(materias[i].prelacion)) == 1)
+            {
+                scanf("%s", materias[i].prelacion);
+            }
+            printf("\nSedes: VILLA ASIA = 1 o ATLANTICO = 2 \nOpci%cn >> ", o);
             scanf("%d", &materias[i].secciones);
 
             if (materias[i].secciones == 1)
@@ -846,17 +922,52 @@ void cargar_de_materia()
             {
                 strcpy(materias[i].sede, "ATLANTICO");
             }
+
             printf("Secciones >> ");
             scanf("%d", &materias[i].secciones);
+            if (materias[i].secciones < 1 || materias[i].secciones > 3)
+            {
+                if (materias[i].secciones > 3)
+                {
+                    printf("Demaciadas secciones - Intente poner menos\n>> ");
+                }
+                else
+                {
+                    printf("Intente nuevamente\n>> ");
+                }
+                scanf("%d", &materias[i].secciones);
+            }
+
+            fflush(stdin);
             printf("Semestre >> ");
-            scanf("%d", &materias[i].semestre);
+            scanf("%s", materias[i].semestre);
+            while ((SoloNumeros(materias[i].semestre)) == 1)
+            {
+                scanf("%s", materias[i].semestre);
+            }
             system("cls");
+            numMaterias++;
+            actualizar_materias();
+            actualizar_configuracion();
         }
-        numMaterias++;
-        actualizar_materias();
-        actualizar_configuracion();
     }
-    actualizar_materias();
+}
+
+int SoloNumeros(char *cadena)
+{
+    for (int i = 0; i < strlen(cadena); i++)
+    {
+        if (!isdigit(cadena[i]))
+        {
+            printf("Ingrese nuevamente >> ");
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int validar_cadena(char cadena[50])
+{
 }
 
 int inicializar_materia()
@@ -1074,7 +1185,7 @@ void materia_mostrar_cuadro()
     printf("N ");
 
     gotoxy(15, 3);
-    printf("NOMBRE");
+    printf("MATERIA");
 
     gotoxy(37, 3);
     printf("U.C");
@@ -1089,7 +1200,7 @@ void materia_mostrar_cuadro()
     printf("SEDE");
 
     gotoxy(84, 3);
-    printf("SECCION");
+    printf("SECCIONES");
 
     gotoxy(98, 3);
     printf("CUPOS");
@@ -1120,7 +1231,17 @@ void imprimir_Docentes(struct docente *docentes, int i, int y)
     gotoxy(66, y);
     printf("%d", 3);
     gotoxy(75, y);
-    printf("S1:%d S2:%d S3:%d", docentes[i].insc_doc[0], docentes[i].insc_doc[1], docentes[i].insc_doc[2]);
+    for (int y = 0; y < 3; y++)
+    {
+        if (docentes[i].insc_doc[y] > 0)
+        {
+            printf("S%d:%d ", y + 1, docentes[i].insc_doc[y]);
+        }
+        if ((docentes[i].insc_doc[0] || docentes[i].insc_doc[1] || docentes[i].insc_doc[2]) == 0)
+        {
+            printf(" X ");
+        }
+    }
     gotoxy(97, y);
     if (docentes[i].disp_doc == 1)
     {
@@ -1144,7 +1265,7 @@ void imprimir_Docentes(struct docente *docentes, int i, int y)
     }
     else
     {
-        printf("ERROR >> FALLO ");
+        printf("NO ASIGNADO");
     }
 }
 void imprimir_Materias(struct materia *materias, int i, int y)
@@ -1157,19 +1278,19 @@ void imprimir_Materias(struct materia *materias, int i, int y)
     gotoxy(8, y);
     printf("%s", materias[i].nombre);
     gotoxy(38, y);
-    printf("%d", materias[i].unidades);
+    printf("%s", materias[i].unidades);
     gotoxy(42, y);
-    printf("%d", materias[i].codigo);
+    printf("%s", materias[i].codigo);
     gotoxy(54, y);
-    printf("%d", materias[i].prelacion);
+    printf("%s", materias[i].prelacion);
     gotoxy(70, y);
     printf("%s", materias[i].sede);
     gotoxy(88, y);
     printf("%d", materias[i].secciones);
     gotoxy(100, y);
-    printf("%d", materias[i].cupos);
+    printf("%s", materias[i].cupos);
     gotoxy(112, y);
-    printf("%d", materias[i].semestre);
+    printf("%s", materias[i].semestre);
 }
 
 void inicializar_todo()
