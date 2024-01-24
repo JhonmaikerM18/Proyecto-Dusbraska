@@ -58,11 +58,10 @@ char nombre[13], apellido[5];
 
 // FUNCIONES PRINCIPALES
 
-// void mostrar_asignaciones();
 void menu_est();
 int carga_de_datos_doc();
 void asignar_materia_doc();
-void imprimirEstructura(struct docente *docentes, int i, int y);
+void mostrar_asignaciones();
 void mostrar_datos_completos_docentes();
 void mostrar_datos_completos_materias();
 // FUNCIONES PRINCIPALES ->>> PARTE DEL HORARIO ES ESTA
@@ -75,7 +74,7 @@ int verificar_hora(int dia, int hora, int i, const char *nombre, const char *ape
 // ACTUALIZAR FICHEROS
 int actualizar_configuracion();
 int actualizar_horario();
-int actualizar_materia();
+int actualizar_materias();
 int actualizar_docentes();
 // INICIALIZAR FICHEROS
 int inicializar_configuracion();
@@ -90,7 +89,8 @@ void centrar_t(char *texto, int x, int y);
 void cuadro(int xs, int ys, int xi, int yi);
 void bloqueo_maximizar();
 void cargarMaterias();
-void materia_mostrar();
+void docente_mostrar_cuadro();
+void materia_mostrar_cuadro();
 void icon();
 void gotoxy(int, int);
 void pantalla_carga(int x, int y, int z, int zz, int tiempo, int segundos);
@@ -101,13 +101,15 @@ int comparar_unidades_credito(const void *a, const void *b);
 int verificacion_de_realidad(char *numero, int x);
 // VARIADASSS
 void random();
+void imprimir_Docentes(struct docente *docentes, int i, int y);
+void imprimir_Materias(struct materia *materias, int i, int y);
 
 int main()
 {
     icon();
     cuadro(30, 5, 50, 9);
     centrar_t("BIENVENIDO", 40, 7);
-    pantalla_carga(40, 20, 6, 71, 1, 700);
+    // pantalla_carga(40, 20, 6, 71, 1, 700);
     menu_est();
     return 0;
 }
@@ -168,7 +170,7 @@ void menu_est()
             mostrar_datos_completos_materias();
             break;
         case 6:
-            printf("Para asignar al docente >> ");
+            printf("Para asignar al docente >> 1 - Para ver los docentes asignados a materia >> 2\n>> ");
             scanf("%d", &opcion);
             if (opcion == 1)
             {
@@ -176,7 +178,7 @@ void menu_est()
             }
             else if (opcion == 2)
             {
-                // mostrar_asignaciones();
+                mostrar_asignaciones();
             }
 
             break;
@@ -238,7 +240,7 @@ int carga_de_datos_doc()
         else // EL QUE MANDA A LA CARGA DE DATOS
         {
             inicializar_horario();
-            temporal = (numDocentes + opcion); 
+            temporal = (numDocentes + opcion);
             break;
         }
     }
@@ -796,32 +798,39 @@ void asignar_materia_doc()
     }
 }
 
+
+
 void cargarMaterias()
 {
     SetConsoleTitle("HORARIO - CARGA DE DATOS DE LAS MATERIAS");
     system("cls");
-    printf("\nIngrese el n%cmero de materias a cargar: ", u);
+    printf("Ingrese el n%cmero de materias a cargar: ", u);
     scanf("%d", &opcion);
-    numMaterias += opcion;
     if ((inicializar_materia()) == 0)
     {
-        actualizar_configuracion();
-        for (int i = 0; i < opcion; i++)
+        temporal = (numMaterias + opcion);
+        for (int i = numMaterias; i < temporal; i++)
         {
             system("cls");
-            printf("\nIngrese los datos de la materia %d:\n", i + 1);
-            printf("Nombre: ");
+            printf("                 Ingrese los datos de la materia (%d)\n\n", i + 1);
+            printf("Nombre >> ");
             scanf("%s", materias[i].nombre);
-            printf("Unidades de credito: ");
+            fflush(stdin);
+            printf("Unidades de credito >> ");
             scanf("%d", &materias[i].unidades);
-            printf("C%cdigo: ", o);
+            fflush(stdin);
+            printf("C%cdigo >> ", o);
             scanf("%d", &materias[i].codigo);
-            printf("Horas: ");
+            fflush(stdin);
+            printf("Horas >> ");
             scanf("%d", &materias[i].horas);
-            printf("Cupos: ");
+            fflush(stdin);
+            printf("Cupos >> ");
             scanf("%d", &materias[i].cupos);
-            printf("Prelaci%cn: ", o);
+            fflush(stdin);
+            printf("Prelaci%cn >> ", o);
             scanf("%d", &materias[i].prelacion);
+            fflush(stdin);
             printf("\nSedes VILLA ASIA = 1 o ATLANTICO = 2 \nOpci%cn >> ", o);
             scanf("%d", &materias[i].secciones);
 
@@ -833,14 +842,17 @@ void cargarMaterias()
             {
                 strcpy(materias[i].sede, "ATLANTICO");
             }
-            printf("Secciones: ");
+            printf("Secciones >> ");
             scanf("%d", &materias[i].secciones);
-            printf("Semestre: ");
+            printf("Semestre >> ");
             scanf("%d", &materias[i].semestre);
             system("cls");
         }
+        numMaterias++;
+        actualizar_materias();
+        actualizar_configuracion();
     }
-    actualizar_materia();
+    actualizar_materias();
 }
 
 int inicializar_materia()
@@ -856,7 +868,7 @@ int inicializar_materia()
     return 0;
 }
 
-int actualizar_materia()
+int actualizar_materias()
 {
     FILE *materia = fopen(F_materia, "w");
     if (materia == NULL)
@@ -906,7 +918,7 @@ int actualizar_docentes()
     return 0;
 }
 
-/*void mostrar_asignaciones()
+void mostrar_asignaciones()
 {
     // Ordenar el arreglo de asignaciones alfabéticamente por nombre del docente
     for (int i = 0; i < numAsignaciones - 1; i++)
@@ -935,13 +947,13 @@ void mostrar_datos_completos_docentes()
     inicializar_configuracion();
     inicializar_docentes();
     // Ordenar los docentes por número de cédula
-    qsort(docentes, numDocentes, sizeof(struct docente), comparar_cedula);
+    qsort(docentes, numDocentes, sizeof(struct docente), comparar_unidades_credito);
     printf("Datos completos de los docentes del semestre activo:\n\n");
-    materia_mostrar();
+    docente_mostrar_cuadro();
     int j = 5;
     for (int i = 0; i < numDocentes; i++)
     {
-        imprimirEstructura(docentes, i, j);
+        imprimir_Docentes(docentes, i, j);
         j += 2;
     }
     gotoxy(0, 26);
@@ -955,29 +967,22 @@ void mostrar_datos_completos_materias()
     inicializar_configuracion();
     // Ordenar las materias por unidades de crédito de menor a mayor
     qsort(materias, numMaterias, sizeof(struct materia), comparar_unidades_credito);
-    system("mode con: cols=86 lines=32");
-    centrar_t("Datos de las materias inscritas", 43, 0);
-    printf("\n                   Ordenadas por unidades de cr%cdito de menor a mayor:\n\n", e);
-
+    centrar_t("Datos de las materias inscritas", 60, 0);
+    gotoxy(34, 1);
+    printf("Ordenadas por unidades de cr%cdito de menor a mayor", e);
+    materia_mostrar_cuadro();
+    int j = 5;
     for (int i = 0; i < numMaterias; i++)
     {
-        printf("-- Materia N: (%d) --\n", i + 1);
-        printf("Nombre: %s\n", materias[i].nombre);
-        printf("Unidades de cr%cdito: %d\n", e, materias[i].unidades);
-        printf("C%cdigo: %d\n", o, materias[i].codigo);
-        printf("Cupos: %d\n", materias[i].cupos);
-        printf("Prelaci%cn: %d\n", o, materias[i].prelacion);
-        printf("Secciones: %d\n", materias[i].secciones);
-        printf("Pertenece: %d\n", materias[i].pertenece);
-        printf("Horas: %d\n", materias[i].horas);
-        printf("Semestre: %d\n", materias[i].semestre);
-        printf("Alumnos inscritos: %d\n\n", materias[i].alumnos_inscritos);
+        imprimir_Materias(materias, i, j);
+        j += 2;
     }
-
+    gotoxy(0, 26);
     precione_una_tecla_para_continuar();
 }
 
-int comparar_cedula(const void *a, const void *b) {
+int comparar_cedula(const void *a, const void *b)
+{
     const struct docente *docenteA = (const struct docente *)a;
     const struct docente *docenteB = (const struct docente *)b;
     return strcmp(docenteA->cedula_d, docenteB->cedula_d);
@@ -988,7 +993,7 @@ int comparar_unidades_credito(const void *a, const void *b)
     return ((struct materia *)a)->unidades - ((struct materia *)b)->unidades;
 }
 
-void materia_mostrar()
+void docente_mostrar_cuadro()
 {
     // LINEASSSSSS HORIZONTALESSS
     int y_posiciones[] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24};
@@ -1041,7 +1046,67 @@ void materia_mostrar()
     gotoxy(0, 24);
     printf("%c", 192);
 }
-void imprimirEstructura(struct docente *docentes, int i, int y)
+void materia_mostrar_cuadro()
+{
+    // LINEASSSSSS HORIZONTALESSS
+    int y_posiciones[] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24};
+    for (int y = 0; y < 12; y++)
+    {
+        for (int j = 1; j < 119; j++)
+        {
+            gotoxy(j, y_posiciones[y]);
+            printf("%c\n", s);
+        }
+    }
+    // LINEASSSSSS VERTICALESS
+    int x_posiciones[] = {0, 6, 35, 41, 53, 68, 82, 95, 107, 118};
+    for (int x = 0; x < 10; x++)
+    {
+        for (int j = 3; j < 24; j++)
+        {
+            gotoxy(x_posiciones[x], j);
+            printf("%c\n", 179);
+        }
+    }
+
+    gotoxy(2, 3);
+    printf("N ");
+
+    gotoxy(15, 3);
+    printf("NOMBRE");
+
+    gotoxy(37, 3);
+    printf("U.C");
+
+    gotoxy(45, 3);
+    printf("CODIGO");
+
+    gotoxy(56, 3);
+    printf("PRELACION");
+
+    gotoxy(72, 3);
+    printf("SEDE");
+
+    gotoxy(84, 3);
+    printf("SECCION");
+
+    gotoxy(98, 3);
+    printf("CUPOS");
+
+    gotoxy(109, 3);
+    printf("SEMESTRE");
+
+    // ESQUINAS
+    gotoxy(0, 2);
+    printf("%c", 218);
+    gotoxy(118, 24);
+    printf("%c", 217);
+    gotoxy(118, 2);
+    printf("%c", 191);
+    gotoxy(0, 24);
+    printf("%c", 192);
+}
+void imprimir_Docentes(struct docente *docentes, int i, int y)
 {
     gotoxy(2, y);
     printf("%d", i + 1);
@@ -1081,6 +1146,31 @@ void imprimirEstructura(struct docente *docentes, int i, int y)
         printf("ERROR >> FALLO ");
     }
 }
+void imprimir_Materias(struct materia *materias, int i, int y)
+{
+    // LINEASSSSSS VERTICALESS
+    int x_posiciones[] = {0, 6, 35, 41, 53, 68, 82, 95, 107, 118};
+
+    gotoxy(3, y);
+    printf("%d", i + 1);
+    gotoxy(8, y);
+    printf("%s", materias[i].nombre);
+    gotoxy(38, y);
+    printf("%d", materias[i].unidades);
+    gotoxy(42, y);
+    printf("%d", materias[i].codigo);
+    gotoxy(54, y);
+    printf("%d", materias[i].prelacion);
+    gotoxy(70, y);
+    printf("%s", materias[i].sede);
+    gotoxy(88, y);
+    printf("%d", materias[i].secciones);
+    gotoxy(100, y);
+    printf("%d", materias[i].cupos);
+    gotoxy(112, y);
+    printf("%d", materias[i].semestre);
+}
+
 void inicializar_todo()
 {
     int inicializar_configuracion();
@@ -1092,6 +1182,6 @@ void actualizar_todo()
 {
     int actualizar_configuracion();
     int actualizar_horario();
-    int actualizar_materia();
+    int actualizar_materias();
     int actualizar_docentes();
 }
